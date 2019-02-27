@@ -4,8 +4,13 @@
 #include <cinder/Rect.h>
 #include <iostream>
 
-typedef std::unique_ptr<GameField> FieldPtr;
-typedef std::vector<std::vector<std::unique_ptr<GameField>>> GameMap;
+enum Direction
+{
+	LEFT,
+	DOWN,
+	RIGHT,
+	UP
+};
 
 struct Point
 {	
@@ -41,8 +46,6 @@ public:
 	virtual ~GameField() {}
 
 	virtual bool IsVisitable() const = 0;
-	//virtual const int GetRow() const = 0;
-	//virtual const int GetColumn() const = 0;
 	virtual bool HasPoints() const = 0;
 	virtual const int GetPoints() const = 0;
 

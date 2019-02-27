@@ -1,5 +1,4 @@
 #include "game_controller.h"
-#include "game_fields.h"
 #include <cinder/Log.h>
 #include <boost/algorithm/string.hpp>
 #include <fstream>
@@ -11,13 +10,12 @@ void GameController::setup()
 
 void GameController::update(double delta)
 {
-	for (auto& row : mGameMap)
-	{
-		for (auto& field : row)
-		{
-			field->update(delta);
-		}
-	}
+	if (mGameActive && PacmanAllowedToMove())
+		mPacman->SetAllowedToMove(true);
+
+	mPacman->update(delta);
+	PacmanAllowedToMove();
+
 }
 
 void GameController::draw()
@@ -66,6 +64,7 @@ void GameController::ParseMap()
 					break;
 				case FIELD::PACMAN:
 					gameFields.push_back(std::make_unique<Pacman>(center, mapPosition, mConfig));
+					mPacman = static_cast<Pacman*>(gameFields.back().get());
 					break;
 				default: // EMPTY
 					break;
@@ -77,3 +76,38 @@ void GameController::ParseMap()
 		fieldRow += mConfig.FIELD_SIZE + mConfig.FIELD_OFFSET;
 	}
 }
+
+bool GameController::PacmanAllowedToMove()
+{
+	auto pacmanPosition = GetMapPosition(mPacman->GetCenter());
+	CI_LOG_I("map pos=" << pacmanPosition);
+	CI_LOG_I("real pos=" << mPacman->GetMapPosition());
+	switch (mPacman->GetDirection())
+	{
+	case Direction::LEFT:
+		return pacmanPosition.mColumn > 0 &&
+			mGameMap.at(pacmanPosition.mRow).at(pacmanPosition.mColumn - 1)->IsVisitable();
+	case Direction::RIGHT:
+		return pacmanPosition.mColumn < (int)(mGameMap.at(pacmanPosition.mRow).size() - 1) &&
+			mGameMap.at(pacmanPosition.mRow).at(pacmanPosition.mColumn + 1)->IsVisitable();
+	case Direction::UP:
+		return pacmanPosition.mRow > 0 &&
+			mGameMap.at(pacmanPosition.mRow - 1).at(pacmanPosition.mColumn)->IsVisitable();
+	case Direction::DOWN:
+		return pacmanPosition.mRow < (int)(mGameMap.size() - 1) &&
+			mGameMap.at(pacmanPosition.mRow + 1).at(pacmanPosition.mColumn)->IsVisitable();
+	default:
+		return false;
+	}
+}
+
+Point GameController::GetMapPosition(Point positionInPixels)
+{
+	int adjustment = mConfig.MAP_START_ROW + mConfig.FIELD_SIZE + mConfig.FIELD_OFFSET;
+	int divisor = mConfig.FIELD_SIZE + mConfig.FIELD_OFFSET;
+	int row = (positionInPixels.mRow - adjustment) / divisor;
+	int column = (positionInPixels.mColumn - adjustment) / divisor;
+
+	return Point(row+1, column+1);
+}
+

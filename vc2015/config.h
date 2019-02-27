@@ -17,10 +17,11 @@ struct Config
 	const int PACMAN_RADIUS = 6;
 	const int PACMAN_MOUTH_SPEED = 3;
 
-	const int PACMAN_SPEED_IN_PX = 4; // per second
+	const int PACMAN_STEP_IN_PX = 4; // per second
+	const int PACMAN_MOVE_UPDATE = 500; // milliseconds
 
-	const int MAP_START_ROW = 20;
-	const int MAP_START_COLUMN = 8;
+	const int MAP_START_ROW = 6;
+	const int MAP_START_COLUMN = 6;
 
 	const std::string MAP_FILE_NAME = "C:\\Users\\Dovile\\Desktop\\pman\\Pacman\\map.txt";
 

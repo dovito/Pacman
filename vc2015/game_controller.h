@@ -2,6 +2,7 @@
 
 #include "config.h"
 #include "game_if.h"
+#include "game_fields.h"
 
 using namespace ci;
 
@@ -19,15 +20,18 @@ public:
 	void draw() override;
 
 private:
-	
-
+	typedef std::unique_ptr<GameField> FieldPtr;
+	typedef std::vector<std::vector<std::unique_ptr<GameField>>> GameMap;
 	void ParseMap();
-
+	bool PacmanAllowedToMove();
+	Point GetMapPosition(Point positionInPixels);
 
 private:
 	const Config& mConfig;
 	GameMap mGameMap;
-	std::unique_ptr<BoardController> mBoardController;
+	Pacman* mPacman = nullptr;
+	bool mGameActive{ false };
+	//std::unique_ptr<BoardController> mBoardController;
 
 };
 		

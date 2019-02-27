@@ -28,6 +28,7 @@ public:
 	void SetPosition(const Point& position) override {};
 	bool HasPoints() const { return mHasPoints; }
 	const int GetPoints() const { return mConfig.BASIC_POINTS; }
+	void SetHasPoints(bool hasPoints) { mHasPoints = hasPoints; }
 
 private:
 	Point mCenter;

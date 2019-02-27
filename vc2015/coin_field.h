@@ -26,11 +26,12 @@ public:
 	const Point& GetMapPosition() const override { return mMapPosition; }
 	void SetCenter(const Point& center) override {};
 	void SetPosition(const Point& position) override {};
-	//const int GetRow() const { return mCenter.mColumn; }
-	//const int GetColumn() const { return mCenter.mRow; }
-	bool HasPoints() const { return mHasPoints; }
-	const int GetPoints() const { return mConfig.COIN_POINTS; }
 	
+	bool HasPoints() const override { return mHasPoints; }
+	const int GetPoints() const override { return mConfig.COIN_POINTS; }
+	
+	void SetHasPoints(bool hasPoints) { mHasPoints = hasPoints; }
+
 private:
 	Point mCenter;
 	Point mMapPosition;

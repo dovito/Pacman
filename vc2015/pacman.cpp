@@ -2,6 +2,12 @@
 
 void Pacman::update(double delta)
 {
+	UpdateMouth(delta);
+	MakeStep();
+}
+
+void Pacman::UpdateMouth(const double delta)
+{
 	if (mMouthState == MouthState::CLOSING)
 	{
 		mOpenMouth -= delta * 2.0f;
@@ -22,6 +28,29 @@ void Pacman::update(double delta)
 	}
 }
 
+void Pacman::MakeStep()
+{
+	if (mAllowedToMove)
+	{
+		switch (mDirection)
+		{
+		case Direction::DOWN:
+			mCenter.mRow += mStepSize;
+			break;
+		case Direction::UP:
+			mCenter.mRow -= mStepSize;
+			break;
+		case Direction::RIGHT:
+			mCenter.mColumn += mStepSize;
+			break;
+		case Direction::LEFT:
+			mCenter.mColumn -= mStepSize;
+			break;
+		default:
+			break;
+		}
+	}
+}
 
 void Pacman::draw()
 {
