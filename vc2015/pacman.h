@@ -33,17 +33,17 @@ public:
 	const int GetPoints() const { return 0; }
 
 	void SetAllowedToMove(bool allowed) { mAllowedToMove = allowed; }
-	Direction GetDirection() { return mDirection; }
+	const Direction GetDirection() const { return mDirection; }
+	void SetDirection(Direction direction) { mDirection = direction;  }
+	void MakeStep();
+	void UpdateMouth(const double delta);
 
 private:
 
 	std::vector<ci::vec2> GetSkeleton();
 	std::vector<ci::vec2> GetBorder(std::vector<ci::vec2>& skeleton);
 	void AlignDirectionAngle(float& angle);
-
-	void UpdateMouth(const double delta);
-	void MakeStep();
-
+	
 	enum MouthState
 	{
 		CLOSING,

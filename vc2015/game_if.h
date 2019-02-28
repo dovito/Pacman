@@ -9,7 +9,8 @@ enum Direction
 	LEFT,
 	DOWN,
 	RIGHT,
-	UP
+	UP,
+	NONE
 };
 
 struct Point
@@ -22,6 +23,11 @@ struct Point
 	}
 	int mRow;
 	int mColumn;
+
+	bool operator!=(Point pt)
+	{
+		return pt.mColumn != mColumn || pt.mRow != mRow;
+	}
 };
 
 inline std::ostream& operator<<(std::ostream& output, const Point& point)

@@ -30,25 +30,22 @@ void Pacman::UpdateMouth(const double delta)
 
 void Pacman::MakeStep()
 {
-	if (mAllowedToMove)
+	switch (mDirection)
 	{
-		switch (mDirection)
-		{
-		case Direction::DOWN:
-			mCenter.mRow += mStepSize;
-			break;
-		case Direction::UP:
-			mCenter.mRow -= mStepSize;
-			break;
-		case Direction::RIGHT:
-			mCenter.mColumn += mStepSize;
-			break;
-		case Direction::LEFT:
-			mCenter.mColumn -= mStepSize;
-			break;
-		default:
-			break;
-		}
+	case Direction::DOWN:
+		mCenter.mRow += mStepSize;
+		break;
+	case Direction::UP:
+		mCenter.mRow -= mStepSize;
+		break;
+	case Direction::RIGHT:
+		mCenter.mColumn += mStepSize;
+		break;
+	case Direction::LEFT:
+		mCenter.mColumn -= mStepSize;
+		break;
+	default:
+		break;
 	}
 }
 
