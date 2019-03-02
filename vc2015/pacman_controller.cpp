@@ -15,19 +15,23 @@ void PacmanController::Update(double elapsedTime)
 
 		if (PacmanAllowedToEnterNextField(direction, nextField))
 		{
-			mPacman->MakeStep();
-
 			if (PacmanIsInNextField(nextField))
 			{
 				mScore += nextField->GetPoints();
 				nextField->UnsetPoints();
-				mPacman->SetCenter(nextField->GetCenter());
-				mPacman->SetGridPosition(nextField->GetGridPosition());
-
+				CI_LOG_I("-------------IN NEXT FIELD---------------------");
 				CI_LOG_I("pacman= " << mPacman->GetGridPosition());
 				CI_LOG_I("next field= " << nextField->GetGridPosition());
-				CI_LOG_I("direction" << ToString(direction));
+				CI_LOG_I("direction= s" << ToString(direction));
 				CI_LOG_I("next field visitable= " << (nextField->IsVisitable() ? "true" : "false"));
+
+				mPacman->SetCenter(nextField->GetCenter());
+				mPacman->SetGridPosition(nextField->GetGridPosition());
+				
+			}
+			else
+			{
+				mPacman->MakeStep();
 			}
 		}
 		else if (PacmanCanMoveInItsOwnField())
@@ -74,7 +78,7 @@ bool PacmanController::PacmanCanMoveInItsOwnField()
 {
 	auto pacmanPixelPosition = mPacman->GetCenter();
 	auto pacmanGridPosition = mPacman->GetGridPosition();
-	auto currentField = mGrid->at(pacmanGridPosition.mRow).at(pacmanGridPosition.mRow).get();
+	auto currentField = mGrid->at(pacmanGridPosition.mRow).at(pacmanGridPosition.mColumn).get();
 	switch (mPacman->GetDirection())
 	{
 	case LEFT:
@@ -143,28 +147,28 @@ GameField* PacmanController::GetNextField(Direction direction)
 
 bool PacmanController::PacmanIsInNextField(GameField* nextField)
 {
-	auto pacmanPixelPosition = mPacman->GetCenter();
-
-	if (pacmanPixelPosition.mRow < 0 || mMapPixelBoundaries.mRow < pacmanPixelPosition.mRow ||
-		pacmanPixelPosition.mColumn < 0 || mMapPixelBoundaries.mColumn < pacmanPixelPosition.mColumn)
+	if (mPacman->GetGridPosition() != nextField->GetGridPosition())
 	{
-		return true;
-	}
+		auto pacmanPixelPosition = mPacman->GetCenter();
+		if (pacmanPixelPosition.mRow < 0 || mMapPixelBoundaries.mRow < pacmanPixelPosition.mRow ||
+			pacmanPixelPosition.mColumn < 0 || mMapPixelBoundaries.mColumn < pacmanPixelPosition.mColumn)
+		{
+			return true;
+		}
 
-	auto nextFieldCenter = nextField->GetCenter();
-	double fieldWidth = mConfig.FIELD_SIZE / 2.0;
-	
-	if (nextFieldCenter.mRow == pacmanPixelPosition.mRow)
-	{
-		return abs(nextFieldCenter.mColumn - pacmanPixelPosition.mColumn) < fieldWidth;
-	}
-	else if (nextFieldCenter.mColumn == pacmanPixelPosition.mColumn)
-	{
-		return abs(nextFieldCenter.mRow - pacmanPixelPosition.mRow) < fieldWidth;
+		auto nextFieldCenter = nextField->GetCenter();
+		double fieldWidth = mConfig.FIELD_SIZE / 2.0;
 
+		if (nextFieldCenter.mRow == pacmanPixelPosition.mRow)
+		{
+			return abs(nextFieldCenter.mColumn - pacmanPixelPosition.mColumn) < fieldWidth;
+		}
+		else if (nextFieldCenter.mColumn == pacmanPixelPosition.mColumn)
+		{
+			return abs(nextFieldCenter.mRow - pacmanPixelPosition.mRow) < fieldWidth;
+		}
 	}
-
-	return false;
+	return true;
 }
 
 Point PacmanController::GetGridPosition(Point positionInPixels)
@@ -176,6 +180,19 @@ Point PacmanController::GetGridPosition(Point positionInPixels)
 
 	return Point(row + 1, column + 1);
 }
+
+//int PacmanController::GetStepsToNextField(Direction direction, GameField* nextField)
+//{
+//	if (direction == LEFT || direction == RIGHT)
+//	{
+//		return abs(mPacman->GetCenter().mColumn - nextField->GetCenter().mColumn);
+//	}
+//	else if (direction == UP || direction == DOWN)
+//	{
+//		return abs(mPacman->GetCenter().mRow - nextField->GetCenter().mRow);
+//	}
+//	return 0;
+//}
 
 void PacmanController::DrawScore()
 {

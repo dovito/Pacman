@@ -17,8 +17,8 @@ struct Config
 	const int PACMAN_RADIUS = 6;
 	const int PACMAN_MOUTH_SPEED = 3;
 
-	const int PACMAN_STEP_IN_PX = 2; // per second
-	const int PACMAN_MOVE_UPDATE = 500; // milliseconds
+	const int PACMAN_UPDATE_INTERVAL = 500; // milliseconds
+	const int PACMAN_STEP_IN_PX = 4; // per update interval
 
 	const int MAP_START_ROW = 6;
 	const int MAP_START_COLUMN = 6;

@@ -44,10 +44,11 @@ private:
 	const Config& mConfig;
 	double mLastUpdateTime = 0.0;
 	bool mGameActive{ false };
-	std::chrono::milliseconds mUpdateInterval{ 0 };
-	std::chrono::duration<double>mTimeSinceLastUpdate{ 0.0 };
+	//std::chrono::milliseconds mUpdateInterval{ 0 };
+	//std::chrono::duration<double>mTimeSinceLastUpdate{ 0.0 };
 	Point mGridBoundaries{ 0,0 };
 	Point mMapPixelBoundaries{ 0,0 };
 	int mScore{ 0 };
+	int mStepsToNextField{ 0 };
+	GameField* mNextField = nullptr;
 };
-
