@@ -36,6 +36,7 @@ void GameController::Draw()
 		objectController->Draw();
 	}
 
+	mGhost->Draw();
 	DrawScore();
 }
 
@@ -82,6 +83,9 @@ void GameController::CreateGameWorld()
 				case PACMAN:
 					gameFields.push_back(std::make_unique<EmptyField>(center, gridPosition, mConfig));
 					mPacman = std::make_unique<Pacman>(center, gridPosition, mConfig);
+					break;
+				case GHOST:
+					mGhost = std::make_unique<Ghost>(center, gridPosition, mConfig);
 					break;
 				default: // EMPTY
 					gameFields.push_back(std::make_unique<EmptyField>(center, gridPosition, mConfig));

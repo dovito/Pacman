@@ -4,6 +4,7 @@
 #include "game_if.h"
 #include "game_fields.h"
 #include "pacman_controller.h"
+#include "ghost.h"
 
 using namespace ci;
 
@@ -39,5 +40,7 @@ private:
 	int mScore{ 0 };
 	bool mGameActive{ false };
 	ObjectControllers mObjectControllers;
+	std::unique_ptr<Ghost> mGhost;
+
 };
 		

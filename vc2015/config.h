@@ -20,6 +20,10 @@ struct Config
 	const std::chrono::milliseconds PACMAN_UPDATE_INTERVAL{ 50ms };
 	const int PACMAN_STEP_IN_PX = 4; // per update interval
 
+	const std::chrono::milliseconds GHOST_UPDATE_INTERVAL{ 50ms };
+	const int GHOST_STEP_IN_PX = 4; // per update interval
+	const int GHOST_STEP_IN_PX_SLOW = 2; // per update interval
+
 	const int MAP_START_ROW = 6;
 	const int MAP_START_COLUMN = 6;
 
@@ -29,6 +33,8 @@ struct Config
 	ci::Color BLUE{ 0, 0, 1 };
 	ci::Color BLACK{ 0, 0, 0 };
 	ci::Color RED{ 1, 0, 0.1 };
+	ci::Color PINK{ 0.5, 0.0, 0.5 };
+	ci::Color GREEN{ 0.0, 0.5, 0.0 };
 
 	const int BASIC_POINTS = 1;
 	const int COIN_POINTS = 3;
