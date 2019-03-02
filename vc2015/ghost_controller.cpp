@@ -10,7 +10,6 @@ void GhostController::Update(double elapsedTime)
 	if (mGameActive && mUpdateInterval >= mConfig.PACMAN_UPDATE_INTERVAL)
 	{
 		mUpdateInterval = 0ms;
-		//Direction direction = mGhost->GetDirection();
 		Direction direction = GetRandomDirection();
 		GameField* nextField = GetNextField(direction);
 

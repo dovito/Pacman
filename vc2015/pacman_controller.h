@@ -42,5 +42,5 @@ private:
 	std::chrono::milliseconds mUpdateInterval{ 0ms };
 	std::chrono::duration<double> mLastUpdate{ 0.0 };
 	Boundaries& mBoundaries;
-	std::function<void(int)> mScoreUpdate;
+	std::function<void(int score)> mUpdateScore;
 };

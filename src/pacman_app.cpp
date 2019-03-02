@@ -8,12 +8,10 @@
 using namespace ci;
 using namespace ci::app;
 
-using namespace std;
-
-void prepareSettings(App::Settings* settings)
+auto prepareSettings = [](App::Settings* settings)
 {
-	log::makeLogger<log::LoggerFile>("pacmanApp.log");
-	settings->setWindowSize(600, 600);
+	log::makeLogger<log::LoggerFile>("pacman_app.log");
+	settings->setWindowSize(500, 350);
 
 #if defined( CINDER_COCOA_TOUCH )
 	settings->setStatusBarEnabled(false); // FIXME: status bar is always visible?
@@ -22,66 +20,60 @@ void prepareSettings(App::Settings* settings)
 #if defined( CINDER_MSW )
 	settings->setConsoleWindowEnabled();
 #endif
-
-}
+};
 
 class PacmanApp : public App
 {
 public:
 	void setup() override;
-	//void mouseDown( MouseEvent event ) override;
 	void update() override;
 	void draw() override;
 	void keyDown(KeyEvent event) override;
-	void keyUp(KeyEvent event) override {}
 
 private:
 	Config mConfig;
 	std::unique_ptr<GameController> mController;
-	double mLastTime = 0;
-	int mUpdateCount = 0;
+	bool mGameActive{ false };
 };
 
 void PacmanApp::setup()
 {
-	CI_LOG_I("height" << getWindowHeight() << " width=" << getWindowWidth());
 	mController = std::make_unique<GameController>(mConfig);
-	mController->setup();
+	mController->Setup();
 }
 
 void PacmanApp::keyDown(KeyEvent event)
 {
+	Direction direction{ Direction::NONE };
 	switch (event.getCode())
 	{
 	case KeyEvent::KEY_DOWN:
-		CI_LOG_I("keyDown"); break;
+		direction = Direction::DOWN; break;
 	case KeyEvent::KEY_UP:
-		CI_LOG_I("keyUp"); break;
+		direction = Direction::UP; break;
 	case KeyEvent::KEY_LEFT:
-		CI_LOG_I("keyLeft"); break;
+		direction = Direction::LEFT; break;
 	case KeyEvent::KEY_RIGHT:
-		CI_LOG_I("keyRight"); break;
+		direction = Direction::RIGHT; break;
+	case KeyEvent::KEY_SPACE:
+		mController->SetGameActive(!mGameActive);
+		mGameActive = !mGameActive;
+		break;
 	default:
 		break;
 	}
+	mController->KeyDown(direction);
 }
 
 void PacmanApp::update()
 {
-	double now = getElapsedSeconds();
-	if (mLastTime > 0)
-	{
-		double delta = now - mLastTime;
-		mController->update(delta);
-	}
-	mLastTime = now;
-	
+	mController->Update(getElapsedSeconds());
 }
 
 void PacmanApp::draw()
 {
 	gl::clear(mConfig.BLACK);
-	mController->draw();
+	mController->Draw();
 }
 
 

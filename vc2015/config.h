@@ -7,6 +7,7 @@
 
 using boost::assign::map_list_of;
 using namespace std::chrono_literals;
+
 struct Config
 {
 	const int FIELD_SIZE = 12;
