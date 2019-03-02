@@ -36,7 +36,6 @@ void GameController::Draw()
 		objectController->Draw();
 	}
 
-	mGhost->Draw();
 	DrawScore();
 }
 
@@ -74,6 +73,9 @@ void GameController::CreateGameWorld()
 				case WALL:
 					gameFields.push_back(std::make_unique<Wall>(center, gridPosition, mConfig));
 					break;
+				case TMP_WALL:
+					gameFields.push_back(std::make_unique<Wall>(center, gridPosition, mConfig));
+					break;
 				case BASIC:
 					gameFields.push_back(std::make_unique<BasicField>(center, gridPosition, mConfig));
 					break;
@@ -85,7 +87,8 @@ void GameController::CreateGameWorld()
 					mPacman = std::make_unique<Pacman>(center, gridPosition, mConfig);
 					break;
 				case GHOST:
-					mGhost = std::make_unique<Ghost>(center, gridPosition, mConfig);
+					gameFields.push_back(std::make_unique<EmptyField>(center, gridPosition, mConfig));
+					mGhosts.push_back(std::make_unique<Ghost>(center, gridPosition, mConfig));
 					break;
 				default: // EMPTY
 					gameFields.push_back(std::make_unique<EmptyField>(center, gridPosition, mConfig));
@@ -113,8 +116,13 @@ void GameController::SetupMapBoundaries()
 void GameController::SetupGameObjectControllers()
 {
 	std::unique_ptr<PacmanController> pacmanController = std::make_unique<PacmanController>(mConfig, mGrid, mPacman, mBoundaries);
-	pacmanController->SetScoreController(this);
+	pacmanController->SetScoreUpdateCallback([this](int score) {mScore += score; });
 	mObjectControllers.push_back(std::move(pacmanController));
+	
+	for (auto& ghost : mGhosts)
+	{
+		mObjectControllers.push_back(std::make_unique<GhostController>(mConfig, mGrid, ghost, mBoundaries)); 
+	}
 }
 
 void GameController::SetGameActive(bool gameActive)

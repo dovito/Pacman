@@ -23,6 +23,7 @@ struct Config
 	const std::chrono::milliseconds GHOST_UPDATE_INTERVAL{ 50ms };
 	const int GHOST_STEP_IN_PX = 4; // per update interval
 	const int GHOST_STEP_IN_PX_SLOW = 2; // per update interval
+	const int RELEASE_GHOSTS = 5; // after 5 seconds of game start
 
 	const int MAP_START_ROW = 6;
 	const int MAP_START_COLUMN = 6;
@@ -43,6 +44,7 @@ struct Config
 enum FIELD 
 { 
 	WALL,
+	TMP_WALL,
 	BASIC,
 	COIN,
 	EMPTY,
@@ -52,6 +54,7 @@ enum FIELD
 
 const boost::unordered_map<const std::string, FIELD> stringToField = map_list_of
 ("W", WALL)
+("T", TMP_WALL) // temporary wall field that guards ghosts
 ("-", BASIC)
 ("C", COIN)
 (" ", EMPTY)

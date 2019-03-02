@@ -2,12 +2,11 @@
 
 #include "game_if.h"
 #include "config.h"
-#include <cinder/Log.h>
 
-class Wall : public GameField
+class TemporaryWall : public GameField
 {
 public:
-	Wall(Point center, Point gridPosition, const Config& config)
+	TemporaryWall(Point center, Point gridPosition, const Config& config)
 		:
 		mCenter(center),
 		mGirdPosition(gridPosition),
@@ -16,16 +15,16 @@ public:
 		mOffset(config.FIELD_OFFSET)
 	{
 	}
-	
+
 	// GameField
-	bool IsVisitable() const override{ return false; }
-	void SetVisitable(bool visitable) override {}
+	bool IsVisitable() const override { return mIsVisitable; }
+	void SetVisitable(bool visitable) override { mIsVisitable = visitable; }
 	const Point& GetCenter() const override { return mCenter; }
 	const Point& GetGridPosition() const override { return mGirdPosition; }
-	void SetCenter(const Point& center) override {};
-	void SetGridPosition(const Point& position) override {};
+	void SetCenter(const Point& center) override {}
+	void SetGridPosition(const Point& position) override {}
 	void UnsetPoints() override {}
-	const int GetPoints() const { return 0;  }
+	const int GetPoints() const { return 0; }
 	void Draw() override;
 
 private:
@@ -34,4 +33,6 @@ private:
 	const Config& mConfig;
 	const int mFieldSize;
 	const int mOffset;
+	bool mIsVisitable{ false };
 };
+

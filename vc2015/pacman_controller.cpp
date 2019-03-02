@@ -16,7 +16,8 @@ void PacmanController::Update(double elapsedTime)
 		{
 			if (PacmanIsInNextField(nextField))
 			{
-				mScoreController->OnScoreUpdate(nextField->GetPoints());
+				//mScoreController->OnScoreUpdate(nextField->GetPoints());
+				mScoreUpdate(nextField->GetPoints());
 				nextField->UnsetPoints();
 				mPacman->SetCenter(nextField->GetCenter());
 				mPacman->SetGridPosition(nextField->GetGridPosition());

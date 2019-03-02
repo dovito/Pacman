@@ -1,6 +1,4 @@
 #include "wall_field.h"
-#include "cinder/app/App.h"
-
 
 void Wall::Draw()
 {

@@ -24,7 +24,8 @@ public:
 	void KeyDown(Direction direction) override;
 	void SetGameActive(bool gameActive) override { mGameActive = gameActive; }
 	void OnScoreUpdate(int score) override {};
-	void SetScoreController(IController* scoreController) { mScoreController = scoreController; }
+
+	void SetScoreUpdateCallback(std::function<void(int)> callBack) { mScoreUpdate = callBack; }
 
 private:
 	bool PacmanAllowedToEnterNextField(Direction direction, GameField* nextField);
@@ -41,5 +42,5 @@ private:
 	std::chrono::milliseconds mUpdateInterval{ 0ms };
 	std::chrono::duration<double> mLastUpdate{ 0.0 };
 	Boundaries& mBoundaries;
-	GameField* mNextField = nullptr;
+	std::function<void(int)> mScoreUpdate;
 };
