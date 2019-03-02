@@ -1,10 +1,13 @@
 #include "coin_field.h"
 
-void Coin::draw()
+void Coin::Draw()
 {
-	ci::gl::color(mConfig.YELLOW);
+	if (mHasPoints)
+	{
+		ci::gl::color(mConfig.YELLOW);
 
-	ci::gl::drawSolidCircle(
-		ci::vec2(mCenter.mColumn, mCenter.mRow),
-		mConfig.COIN_FIELD_RADIUS);
+		ci::gl::drawSolidCircle(
+			ci::vec2(mCenter.mColumn, mCenter.mRow),
+			mConfig.COIN_FIELD_RADIUS);
+	}
 }

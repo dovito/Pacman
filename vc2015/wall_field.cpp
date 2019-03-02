@@ -2,7 +2,7 @@
 #include "cinder/app/App.h"
 
 
-void Wall::draw()
+void Wall::Draw()
 {
 	ci::gl::color(mConfig.BLUE);
 

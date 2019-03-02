@@ -7,33 +7,29 @@
 class Wall : public GameField
 {
 public:
-	Wall(Point center, Point mapPosition, const Config& config)
+	Wall(Point center, Point gridPosition, const Config& config)
 		:
 		mCenter(center),
-		mMapPosition(mapPosition),
+		mGirdPosition(gridPosition),
 		mConfig(config),
 		mFieldSize(config.FIELD_SIZE),
 		mOffset(config.FIELD_OFFSET)
 	{
 	}
-
-	// IController
-	void setup() override {};
-	void update(double delta) override {};
-	void draw() override;
-
+	
 	// GameField
 	bool IsVisitable() const override{ return false; }
 	const Point& GetCenter() const override { return mCenter; }
-	const Point& GetMapPosition() const override { return mMapPosition; }
+	const Point& GetGridPosition() const override { return mGirdPosition; }
 	void SetCenter(const Point& center) override {};
-	void SetPosition(const Point& position) override {};
-	bool HasPoints() const { return false; }
+	void SetGridPosition(const Point& position) override {};
+	void SetHasPoints(bool hasPoints) override {}
 	const int GetPoints() const { return 0;  }
+	void Draw() override;
 
 private:
 	Point mCenter;
-	Point mMapPosition;
+	Point mGirdPosition;
 	const Config& mConfig;
 	const int mFieldSize;
 	const int mOffset;

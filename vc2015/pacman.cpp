@@ -1,11 +1,5 @@
 #include "pacman.h"
 
-void Pacman::update(double delta)
-{
-	UpdateMouth(delta);
-	MakeStep();
-}
-
 void Pacman::UpdateMouth(const double delta)
 {
 	if (mMouthState == MouthState::CLOSING)
@@ -49,7 +43,7 @@ void Pacman::MakeStep()
 	}
 }
 
-void Pacman::draw()
+void Pacman::Draw()
 {
 	std::vector<ci::vec2> skeleton = std::move(GetSkeleton());
 	std::vector<ci::vec2> border = std::move(GetBorder(skeleton));
@@ -75,7 +69,6 @@ std::vector<ci::vec2> Pacman::GetSkeleton()
 	if (endAngle < startAngle)
 		openMouthAngle += 2.0f * M_PI;
 
-	//CI_LOG_I("alpha=" << startAngle << ", beta=" << endAngle);
 	const float angleStep = 0.2;
 
 	for (float angle = startAngle; angle <= endAngle; angle += angleStep)

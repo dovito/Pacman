@@ -1,10 +1,13 @@
 #include "basic_field.h"
 
-void BasicField::draw()
+void BasicField::Draw()
 {
-	ci::gl::color(mConfig.YELLOW);
+	if (mHasPoints)
+	{
+		ci::gl::color(mConfig.YELLOW);
 
-	ci::gl::drawSolidCircle(
-		ci::vec2(mCenter.mColumn, mCenter.mRow),
-		mConfig.BASIC_FIELD_RADIUS);
+		ci::gl::drawSolidCircle(
+			ci::vec2(mCenter.mColumn, mCenter.mRow),
+			mConfig.BASIC_FIELD_RADIUS);
+	}
 }

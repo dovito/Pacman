@@ -7,34 +7,29 @@
 class Coin : public GameField
 {
 public:
-	Coin(Point& center, Point& mapPosition, const Config& config)
+	Coin(Point& center, Point& gridPosition, const Config& config)
 		:
 		mCenter(std::move(center)),
-		mMapPosition(std::move(mapPosition)),
+		mGridPosition(gridPosition),
 		mConfig(config)
 	{
 	}
 
-	// IController
-	void setup() override {};
-	void update(double delta) override {};
-	void draw() override;
-
 	// GameField
 	bool IsVisitable() const { return true; }
 	const Point& GetCenter() const override { return mCenter; }
-	const Point& GetMapPosition() const override { return mMapPosition; }
+	const Point& GetGridPosition() const override { return mGridPosition; }
 	void SetCenter(const Point& center) override {};
-	void SetPosition(const Point& position) override {};
+	void SetGridPosition(const Point& position) override {};
 	
-	bool HasPoints() const override { return mHasPoints; }
+	void SetHasPoints(bool hasPoints) override { mHasPoints = hasPoints; }
 	const int GetPoints() const override { return mConfig.COIN_POINTS; }
 	
-	void SetHasPoints(bool hasPoints) { mHasPoints = hasPoints; }
+	void Draw() override;
 
 private:
 	Point mCenter;
-	Point mMapPosition;
+	Point mGridPosition;
 	const Config& mConfig;
 	bool mHasPoints = true;
 };

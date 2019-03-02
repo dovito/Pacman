@@ -3,9 +3,7 @@
 #include "config.h"
 #include "game_if.h"
 #include "game_fields.h"
-
-#include <cinder/app/App.h>
-#include <cinder/app/KeyEvent.h>
+#include "pacman_controller.h"
 
 using namespace ci;
 
@@ -18,26 +16,23 @@ public:
 	{
 	}
 
-	void setup() override;
-	void update(double delta) override;
-	void draw() override;
+	void Setup() override;
+	void Update(double elapsedTime) override;
+	void Draw() override;
 
-	void KeyDown(Direction direction);
-	void GameStarted() { mGameActive = true; }
+	void KeyDown(Direction direction) override;
+	void SetGameActive(bool gameActive) override;
 
 private:
-	typedef std::unique_ptr<GameField> FieldPtr;
-	typedef std::vector<std::vector<std::unique_ptr<GameField>>> GameMap;
-	void ParseMap();
-	bool PacmanAllowedToMove(Direction direction, GameField* nextField);
-	Point GetMapPosition(Point point);
-	GameField* GetNextField(Direction direction);
-	void AdjustPixelPosition(Direction direction, GameField* nextField);
+	
+	void CreateGameWorld();
+	void SetupGameObjectControllers();
 
 private:
 	const Config& mConfig;
-	GameMap mGameMap;
-	std::unique_ptr<Pacman> mPacman;
+	GridPtr mGrid;
+	PacmanPtr mPacman;
 	bool mGameActive{ false };
+	ObjectControllers mObjectControllers;
 };
 		

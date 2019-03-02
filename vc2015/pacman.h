@@ -5,41 +5,31 @@
 #include <cinder/Log.h>
 
 
-class Pacman : public GameField
+class Pacman : public IGameObject
 {
 public:
 	Pacman(Point center, Point mapPosition, const Config& config)
 		:
 		mCenter(center),
 		mMapPosition(mapPosition),
-		mConfig(config)
-	{
-		mUpdateInterval = std::chrono::milliseconds(mConfig.PACMAN_MOVE_UPDATE);
-		mStepSize = mConfig.PACMAN_STEP_IN_PX;
+		mConfig(config),
+		mStepSize(mConfig.PACMAN_STEP_IN_PX)
+	{		
 	}
 
-	// IController
-	void setup() override {};
-	void update(double delta) override;
-	void draw() override;
-
-	// GameField
-	bool IsVisitable() const override { return false; }
-	const Point& GetCenter() const override { return mCenter;  }
-	const Point& GetMapPosition() const override { return mMapPosition; }
+	// IGameObject
+	const Direction GetDirection() const override { return mDirection; }
+	void SetDirection(Direction direction) override { mDirection = direction; }
+	const Point& GetCenter() const override { return mCenter; }
 	void SetCenter(const Point& center) override { mCenter = center; }
-	void SetPosition(const Point& position) override { mMapPosition = position; }
-	bool HasPoints() const { return false; }
-	const int GetPoints() const { return 0; }
-
-	void SetAllowedToMove(bool allowed) { mAllowedToMove = allowed; }
-	const Direction GetDirection() const { return mDirection; }
-	void SetDirection(Direction direction) { mDirection = direction;  }
-	void MakeStep();
+	const Point& GetGridPosition() const override { return mMapPosition; }
+	void SetGridPosition(const Point& position) override { mMapPosition = position; }
+	void MakeStep() override;
+	void Draw() override;
+	
 	void UpdateMouth(const double delta);
 
 private:
-
 	std::vector<ci::vec2> GetSkeleton();
 	std::vector<ci::vec2> GetBorder(std::vector<ci::vec2>& skeleton);
 	void AlignDirectionAngle(float& angle);
@@ -57,8 +47,6 @@ private:
 	Direction mDirection{ Direction::LEFT };
 	float mOpenMouth{ 1.0f };
 	MouthState mMouthState{ MouthState::CLOSING };
-	std::chrono::milliseconds mUpdateInterval{ 0 };
-	std::chrono::duration<float>mTimeSinceLastUpdate{ 0.0 };
 	int mStepSize;
 	bool mAllowedToMove{ false };
 };

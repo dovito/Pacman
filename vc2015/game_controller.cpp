@@ -4,76 +4,51 @@
 #include <boost/algorithm/string.hpp>
 #include <fstream>
 
-void GameController::setup()
+void GameController::Setup()
 {
-	ParseMap();
+	CreateGameWorld();
+	SetupGameObjectControllers();
 }
 
-void GameController::update(double delta)
+void GameController::Update(double elapsedTime)
 {
-	if (mGameActive)
+	for (auto& objectController : mObjectControllers)
 	{
-		Direction direction = mPacman->GetDirection();
-		GameField* nextField = GetNextField(direction);
-
-		if (PacmanAllowedToMove(direction, nextField))
-		{
-			mPacman->SetDirection(direction);
-			mPacman->MakeStep();
-			AdjustPixelPosition(direction, nextField);
-		}
-	}
-
-	mPacman->UpdateMouth(delta);
-}
-
-void GameController::AdjustPixelPosition(Direction direction, GameField* nextField)
-{
-	switch (direction)
-	{
-	case LEFT:
-	case RIGHT:
-		mPacman->SetCenter(Point(nextField->GetCenter().mRow, mPacman->GetCenter().mColumn));
-		break;
-	case DOWN:
-	case UP:
-		mPacman->SetCenter(Point(mPacman->GetCenter().mRow, nextField->GetCenter().mColumn));
-		break;
-	case NONE:
-	default:
-		break;
+		objectController->Update(elapsedTime);
 	}
 }
 
-void GameController::draw()
+
+void GameController::Draw()
 {
-	for (auto& row : mGameMap)
+	for (auto& objectController : mObjectControllers)
+	{
+		objectController->Draw();
+	}
+
+	for (auto& row : *mGrid)
 	{
 		for (auto& field : row)
 		{
-			field->draw();
+			field->Draw();
 		}
 	}
-
-	mPacman->draw();
 }
 
 void GameController::KeyDown(Direction direction)
 {
-	GameField* nextField = GetNextField(direction);
-	if (nextField && PacmanAllowedToMove(direction, nextField))
-	{	
-		CI_LOG_I("next_field=" << nextField->GetMapPosition());
-		mPacman->SetDirection(direction);
-		AdjustPixelPosition(direction, nextField);
+	for (auto& objectController : mObjectControllers)
+	{
+		objectController->KeyDown(direction);
 	}
 }
 
-void GameController::ParseMap()
+void GameController::CreateGameWorld()
 {
+	
 	int fieldRow = mConfig.MAP_START_ROW;
 	std::ifstream inFile(mConfig.MAP_FILE_NAME);
-
+	Grid grid;
 	for (std::string line; getline(inFile, line);)
 	{
 		int fieldColumn = mConfig.MAP_START_COLUMN;
@@ -84,7 +59,7 @@ void GameController::ParseMap()
 		for (auto token : tokens)
 		{
 			Point center(fieldRow, fieldColumn);
-			Point mapPosition{ static_cast<int>(mGameMap.size()), static_cast<int>(gameFields.size()) };
+			Point mapPosition{ static_cast<int>(grid.size()), static_cast<int>(gameFields.size()) };
 
 			auto it = stringToField.find(token);
 			if (it != stringToField.end())
@@ -111,60 +86,21 @@ void GameController::ParseMap()
 			}
 			fieldColumn += mConfig.FIELD_SIZE + mConfig.FIELD_OFFSET;
 		}
-		mGameMap.push_back(std::move(gameFields));
+		grid.push_back(std::move(gameFields));
 		fieldRow += mConfig.FIELD_SIZE + mConfig.FIELD_OFFSET;
 	}
+	mGrid = std::make_shared<Grid>(std::move(grid));
 }
 
-bool GameController::PacmanAllowedToMove(Direction direction, GameField* nextField)
+void GameController::SetupGameObjectControllers()
 {
-	auto pacmanPixelPosition = mPacman->GetCenter();
-	auto pacmanGridPosition = GetMapPosition(pacmanPixelPosition);
-	CI_LOG_I("next_field=" << nextField->GetMapPosition());
-	CI_LOG_I("pacman=" << pacmanGridPosition);
-	switch (direction)
+	mObjectControllers.push_back(std::make_unique<PacmanController>(mConfig, mGrid,mPacman));
+}
+
+void GameController::SetGameActive(bool gameActive)
+{
+	for (auto& objectController : mObjectControllers)
 	{
-	case LEFT:
-		return nextField->IsVisitable() && pacmanGridPosition.mColumn > 0;
-	case RIGHT:
-		return nextField->IsVisitable() &&
-			pacmanGridPosition.mColumn < (int)(mGameMap.at(pacmanGridPosition.mRow).size() - 1);
-	case UP:
-		return nextField->IsVisitable() && pacmanGridPosition.mRow > 0;
-	case DOWN:
-		return nextField->IsVisitable() && 
-			pacmanGridPosition.mRow < (int)(mGameMap.size() - 1);
-	default:
-		return false;
+		objectController->SetGameActive(gameActive);
 	}
 }
-
-GameField* GameController::GetNextField(Direction direction)
-{
-	auto pacmanGridPosition = GetMapPosition(mPacman->GetCenter());
-	CI_LOG_I(pacmanGridPosition);
-	switch (direction)
-	{
-	case LEFT:
-		return mGameMap.at(pacmanGridPosition.mRow).at(pacmanGridPosition.mColumn - 1).get();
-	case RIGHT:
-		return mGameMap.at(pacmanGridPosition.mRow).at(pacmanGridPosition.mColumn + 1).get();
-	case UP:
-		return mGameMap.at(pacmanGridPosition.mRow - 1).at(pacmanGridPosition.mColumn).get();
-	case DOWN:
-		return mGameMap.at(pacmanGridPosition.mRow + 1).at(pacmanGridPosition.mColumn).get();
-	default:
-		return nullptr;
-	}
-}
-
-Point GameController::GetMapPosition(Point positionInPixels)
-{
-	int adjustment = mConfig.MAP_START_ROW + mConfig.FIELD_SIZE + mConfig.FIELD_OFFSET;
-	int divisor = mConfig.FIELD_SIZE + mConfig.FIELD_OFFSET;
-	int row = (positionInPixels.mRow - adjustment) / divisor;
-	int column = (positionInPixels.mColumn - adjustment) / divisor;
-
-	return Point(row+1, column+1);
-}
-
