@@ -21,7 +21,7 @@ public:
 	const Point& GetGridPosition() const override { return mGridPosition; }
 	void SetCenter(const Point& center) override {};
 	void SetGridPosition(const Point& position) override {};
-	void SetHasPoints(bool) override {};
+	void UnsetPoints() override {};
 	const int GetPoints() const { return 0; }
 	void Draw() override {};
 

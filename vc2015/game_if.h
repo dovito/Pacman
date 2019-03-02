@@ -40,6 +40,11 @@ struct Point
 	{
 		return pt.mColumn != mColumn || pt.mRow != mRow;
 	}
+
+	bool operator!=(const Point pt) const
+	{
+		return pt.mColumn != mColumn || pt.mRow != mRow;
+	}
 };
 
 inline std::ostream& operator<<(std::ostream& output, const Point& point)
@@ -66,7 +71,7 @@ public:
 	virtual ~GameField() {}
 
 	virtual bool IsVisitable() const = 0;
-	virtual void SetHasPoints(bool hasPoints) = 0;
+	virtual void UnsetPoints() = 0;
 	virtual const int GetPoints() const = 0;
 
 	virtual const Point& GetCenter() const = 0;

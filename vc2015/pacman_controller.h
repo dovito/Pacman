@@ -25,7 +25,7 @@ public:
 	// IController
 	void Setup() override {};
 	void Update(double delta) override;
-	void Draw() override { mPacman->Draw(); }
+	void Draw() override { mPacman->Draw(); DrawScore(); }
 	void KeyDown(Direction direction) override;
 	void SetGameActive(bool gameActive) override { mGameActive = gameActive; }
 
@@ -35,7 +35,8 @@ private:
 	bool PacmanCanMoveInItsOwnField();
 	GameField* GetNextField(Direction direction);
 	bool PacmanIsInNextField(GameField* nextField);
-	Point ReadjustedPosition(Point positionInPixels);
+	Point GetGridPosition(Point positionInPixels);
+	void DrawScore();
 
 private:
 	GridPtr mGrid;
@@ -47,5 +48,6 @@ private:
 	std::chrono::duration<double>mTimeSinceLastUpdate{ 0.0 };
 	Point mGridBoundaries{ 0,0 };
 	Point mMapPixelBoundaries{ 0,0 };
+	int mScore{ 0 };
 };
 

@@ -11,7 +11,8 @@ public:
 		:
 		mCenter(std::move(center)),
 		mGridPosition(gridPosition),
-		mConfig(config)
+		mConfig(config),
+		mPoints(mConfig.COIN_POINTS)
 	{
 	}
 
@@ -21,9 +22,8 @@ public:
 	const Point& GetGridPosition() const override { return mGridPosition; }
 	void SetCenter(const Point& center) override {};
 	void SetGridPosition(const Point& position) override {};
-	
-	void SetHasPoints(bool hasPoints) override { mHasPoints = hasPoints; }
-	const int GetPoints() const override { return mConfig.COIN_POINTS; }
+	void UnsetPoints() override { mPoints = 0; }
+	const int GetPoints() const override { return mPoints; }
 	
 	void Draw() override;
 
@@ -31,6 +31,6 @@ private:
 	Point mCenter;
 	Point mGridPosition;
 	const Config& mConfig;
-	bool mHasPoints = true;
+	int mPoints;
 };
 

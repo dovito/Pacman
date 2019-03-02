@@ -2,7 +2,7 @@
 
 void BasicField::Draw()
 {
-	if (mHasPoints)
+	if (mPoints > 0)
 	{
 		ci::gl::color(mConfig.YELLOW);
 

@@ -1,5 +1,8 @@
 #include "pacman_controller.h"
 
+#include <cinder/Text.h>
+#include <boost/lexical_cast.hpp>
+
 void PacmanController::Update(double elapsedTime)
 {
 	double timeDelta = elapsedTime - mLastUpdateTime;
@@ -13,11 +16,14 @@ void PacmanController::Update(double elapsedTime)
 		if (PacmanAllowedToEnterNextField(direction, nextField))
 		{
 			mPacman->MakeStep();
+
 			if (PacmanIsInNextField(nextField))
 			{
-				nextField->SetHasPoints(false);
+				mScore += nextField->GetPoints();
+				nextField->UnsetPoints();
 				mPacman->SetCenter(nextField->GetCenter());
 				mPacman->SetGridPosition(nextField->GetGridPosition());
+
 				CI_LOG_I("pacman= " << mPacman->GetGridPosition());
 				CI_LOG_I("next field= " << nextField->GetGridPosition());
 				CI_LOG_I("direction" << ToString(direction));
@@ -45,17 +51,20 @@ bool PacmanController::PacmanAllowedToEnterNextField(Direction direction, GameFi
 {
 	if (nextField)
 	{
-		auto pacmanPixelPosition = mPacman->GetCenter();
-		
-		if (direction == LEFT || direction == RIGHT)
+		if (nextField->GetGridPosition() != mPacman->GetGridPosition())
 		{
-			return nextField->IsVisitable() &&
-				pacmanPixelPosition.mRow == nextField->GetCenter().mRow;
-		}
-		else if (direction == UP || direction == DOWN)
-		{
-			return nextField->IsVisitable() &&
-				pacmanPixelPosition.mColumn == nextField->GetCenter().mColumn;
+			auto pacmanPixelPosition = mPacman->GetCenter();
+
+			if (direction == LEFT || direction == RIGHT)
+			{
+				return nextField->IsVisitable() &&
+					pacmanPixelPosition.mRow == nextField->GetCenter().mRow;
+			}
+			else if (direction == UP || direction == DOWN)
+			{
+				return nextField->IsVisitable() &&
+					pacmanPixelPosition.mColumn == nextField->GetCenter().mColumn;
+			}
 		}
 	}
 	return false;
@@ -158,7 +167,7 @@ bool PacmanController::PacmanIsInNextField(GameField* nextField)
 	return false;
 }
 
-Point PacmanController::ReadjustedPosition(Point positionInPixels)
+Point PacmanController::GetGridPosition(Point positionInPixels)
 {
 	int adjustment = mConfig.MAP_START_ROW + mConfig.FIELD_SIZE + mConfig.FIELD_OFFSET;
 	int divisor = mConfig.FIELD_SIZE + mConfig.FIELD_OFFSET;
@@ -166,4 +175,15 @@ Point PacmanController::ReadjustedPosition(Point positionInPixels)
 	int column = (positionInPixels.mColumn - adjustment) / divisor;
 
 	return Point(row + 1, column + 1);
+}
+
+void PacmanController::DrawScore()
+{
+	ci::TextLayout simple;
+	ci::gl::Texture2dRef texture;
+	simple.setFont(ci::Font("Arial", 24));
+	simple.setColor(ci::Color(1, 0, 0.1f));
+	simple.addLine("Score: " + boost::lexical_cast<std::string>(mScore));
+	texture = ci::gl::Texture2d::create(simple.render(true, false));
+	ci::gl::draw(texture, ci::vec2(10, mMapPixelBoundaries.mRow+10));
 }

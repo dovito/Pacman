@@ -46,16 +46,23 @@ void Pacman::MakeStep()
 void Pacman::Draw()
 {
 	std::vector<ci::vec2> skeleton = std::move(GetSkeleton());
-	std::vector<ci::vec2> border = std::move(GetBorder(skeleton));
-	ci::vec2 position{ mCenter.mColumn, mCenter.mRow };
+	std::vector<ci::vec2> body = std::move(GetBorder(skeleton));
+	ci::vec2 center{ mCenter.mColumn, mCenter.mRow };
 	ci::gl::color(mConfig.YELLOW);
-	for (auto i = 0u; i < border.size() - 1; ++i)
+	for (auto i = 0u; i < body.size() - 1; ++i)
 	{
-		const ci::vec2& p1 = border[i];
-		const ci::vec2& p2 = border[i + 1];
+		const ci::vec2& p1 = body[i];
+		const ci::vec2& p2 = body[i + 1];
 
-		ci::gl::drawSolidTriangle(p1, p2, position);
+		ci::gl::drawSolidTriangle(p1, p2, center);
 	}
+
+	/*body.push_back(center);
+	ci::PolyLine2f pl(body);
+	pl.setClosed();
+
+	ci::gl::color(1.0f, 1.0f, 1.0f);
+	ci::gl::draw(pl);*/
 }
 
 std::vector<ci::vec2> Pacman::GetSkeleton()
@@ -84,13 +91,13 @@ std::vector<ci::vec2> Pacman::GetSkeleton()
 std::vector<ci::vec2> Pacman::GetBorder(std::vector<ci::vec2>& skeleton)
 {
 	std::vector<ci::vec2> points;
-	ci::vec2 position{ mCenter.mColumn, mCenter.mRow };
+	ci::vec2 center{ mCenter.mColumn, mCenter.mRow };
 
 	std::transform(
 		std::begin(skeleton),
 		std::end(skeleton),
 		std::back_inserter(points),
-		[&position](const ci::vec2& v) { return v + position; });
+		[&center](const ci::vec2& v) { return v + center; });
 
 	return points;
 }
