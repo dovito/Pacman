@@ -18,6 +18,11 @@ void GameController::Update(double elapsedTime)
 	{
 		objectController->Update(elapsedTime);
 	}
+	
+	if (!mGhostsReleased && elapsedTime > 5.0)
+	{
+		ReleaseGhosts();
+	}
 }
 
 
@@ -74,7 +79,7 @@ void GameController::CreateGameWorld()
 					gameFields.push_back(std::make_unique<Wall>(center, gridPosition, mConfig));
 					break;
 				case TMP_WALL:
-					gameFields.push_back(std::make_unique<Wall>(center, gridPosition, mConfig));
+					gameFields.push_back(std::make_unique<TemporaryWall>(center, gridPosition, mConfig));
 					break;
 				case BASIC:
 					gameFields.push_back(std::make_unique<BasicField>(center, gridPosition, mConfig));
@@ -147,4 +152,15 @@ void GameController::DrawScore()
 	simple.addLine("Score: " + boost::lexical_cast<std::string>(mScore));
 	texture = ci::gl::Texture2d::create(simple.render(true, false));
 	ci::gl::draw(texture, ci::vec2(10, mBoundaries.mMapPixels.mRow + 10));
+}
+void GameController::ReleaseGhosts()
+{
+	for (auto& row : *mGrid)
+	{
+		for (auto& field : row)
+		{
+			field->SetIsVisitable(true);
+		}
+	}
+	mGhostsReleased = true;
 }

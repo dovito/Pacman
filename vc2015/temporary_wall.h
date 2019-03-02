@@ -18,7 +18,7 @@ public:
 
 	// GameField
 	bool IsVisitable() const override { return mIsVisitable; }
-	void SetVisitable(bool visitable) override { mIsVisitable = visitable; }
+	void SetIsVisitable(bool visitable) override { mIsVisitable = visitable; }
 	const Point& GetCenter() const override { return mCenter; }
 	const Point& GetGridPosition() const override { return mGirdPosition; }
 	void SetCenter(const Point& center) override {}

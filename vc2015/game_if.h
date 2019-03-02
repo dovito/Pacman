@@ -72,7 +72,7 @@ public:
 	virtual ~GameField() {}
 
 	virtual bool IsVisitable() const = 0;
-	virtual void SetVisitable(bool visitable) = 0;
+	virtual void SetIsVisitable(bool visitable) = 0;
 	virtual void UnsetPoints() = 0;
 	virtual const int GetPoints() const = 0;
 

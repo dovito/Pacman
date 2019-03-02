@@ -31,6 +31,7 @@ private:
 	void SetupMapBoundaries();
 	void SetupGameObjectControllers();
 	void DrawScore();
+	void ReleaseGhosts();
 
 private:
 	const Config& mConfig;
@@ -41,6 +42,7 @@ private:
 	bool mGameActive{ false };
 	ObjectControllers mObjectControllers;
 	std::vector<GhostPtr> mGhosts;
+	bool mGhostsReleased{ false };
 
 };
 		
