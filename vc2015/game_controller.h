@@ -22,16 +22,21 @@ public:
 
 	void KeyDown(Direction direction) override;
 	void SetGameActive(bool gameActive) override;
+	void OnScoreUpdate(int score) override;
 
 private:
 	
 	void CreateGameWorld();
+	void SetupMapBoundaries();
 	void SetupGameObjectControllers();
+	void DrawScore();
 
 private:
 	const Config& mConfig;
 	GridPtr mGrid;
 	PacmanPtr mPacman;
+	Boundaries mBoundaries;
+	int mScore{ 0 };
 	bool mGameActive{ false };
 	ObjectControllers mObjectControllers;
 };

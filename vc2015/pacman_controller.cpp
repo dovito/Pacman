@@ -1,14 +1,13 @@
 #include "pacman_controller.h"
 
-#include <cinder/Text.h>
-#include <boost/lexical_cast.hpp>
-
 void PacmanController::Update(double elapsedTime)
-{
-	double timeDelta = elapsedTime - mLastUpdateTime;
-	mPacman->UpdateMouth(timeDelta);
+{	
+	auto updateNow = std::chrono::duration<double>(elapsedTime);
+	auto timeDelta = updateNow - mLastUpdate;
+	mUpdateInterval += std::chrono::duration_cast<std::chrono::milliseconds>(timeDelta);
+	mPacman->UpdateMouth(timeDelta.count());
 
-	if (mGameActive)
+	if (mGameActive && mUpdateInterval >= mConfig.PACMAN_UPDATE_INTERVAL)
 	{
 		Direction direction = mPacman->GetDirection();
 		GameField* nextField = GetNextField(direction);
@@ -17,17 +16,10 @@ void PacmanController::Update(double elapsedTime)
 		{
 			if (PacmanIsInNextField(nextField))
 			{
-				mScore += nextField->GetPoints();
+				mScoreController->OnScoreUpdate(nextField->GetPoints());
 				nextField->UnsetPoints();
-				CI_LOG_I("-------------IN NEXT FIELD---------------------");
-				CI_LOG_I("pacman= " << mPacman->GetGridPosition());
-				CI_LOG_I("next field= " << nextField->GetGridPosition());
-				CI_LOG_I("direction= s" << ToString(direction));
-				CI_LOG_I("next field visitable= " << (nextField->IsVisitable() ? "true" : "false"));
-
 				mPacman->SetCenter(nextField->GetCenter());
 				mPacman->SetGridPosition(nextField->GetGridPosition());
-				
 			}
 			else
 			{
@@ -38,8 +30,9 @@ void PacmanController::Update(double elapsedTime)
 		{
 			mPacman->MakeStep();
 		}
+		mUpdateInterval = 0ms;
 	}
-	mLastUpdateTime = elapsedTime;
+	mLastUpdate = updateNow;
 }
 
 void PacmanController::KeyDown(Direction direction)
@@ -102,7 +95,7 @@ GameField* PacmanController::GetNextField(Direction direction)
 	{
 		if (pacmanGridPosition.mColumn <= 0)
 		{
-			return mGrid->at(pacmanGridPosition.mRow).at(mGridBoundaries.mColumn - 1).get();;
+			return mGrid->at(pacmanGridPosition.mRow).at(mBoundaries.mGrid.mColumn - 1).get();;
 		}
 		else
 		{
@@ -111,7 +104,7 @@ GameField* PacmanController::GetNextField(Direction direction)
 	}
 	else if (direction == RIGHT)
 	{
-		if (pacmanGridPosition.mColumn >= mGridBoundaries.mColumn - 1)
+		if (pacmanGridPosition.mColumn >= mBoundaries.mGrid.mColumn - 1)
 		{
 			return mGrid->at(pacmanGridPosition.mRow).at(0).get();;
 		}
@@ -124,7 +117,7 @@ GameField* PacmanController::GetNextField(Direction direction)
 	{
 		if (pacmanGridPosition.mRow <= 0)
 		{
-			return mGrid->at(mGridBoundaries.mRow - 1).at(pacmanGridPosition.mColumn).get();
+			return mGrid->at(mBoundaries.mGrid.mRow - 1).at(pacmanGridPosition.mColumn).get();
 		}
 		else
 		{
@@ -133,7 +126,7 @@ GameField* PacmanController::GetNextField(Direction direction)
 	}
 	else if (direction == DOWN)
 	{
-		if (pacmanGridPosition.mRow >= mGridBoundaries.mRow - 1)
+		if (pacmanGridPosition.mRow >= mBoundaries.mGrid.mRow - 1)
 		{
 			return mGrid->at(0).at(pacmanGridPosition.mColumn).get();
 		}
@@ -150,8 +143,8 @@ bool PacmanController::PacmanIsInNextField(GameField* nextField)
 	if (mPacman->GetGridPosition() != nextField->GetGridPosition())
 	{
 		auto pacmanPixelPosition = mPacman->GetCenter();
-		if (pacmanPixelPosition.mRow < 0 || mMapPixelBoundaries.mRow < pacmanPixelPosition.mRow ||
-			pacmanPixelPosition.mColumn < 0 || mMapPixelBoundaries.mColumn < pacmanPixelPosition.mColumn)
+		if (pacmanPixelPosition.mRow < 0 || mBoundaries.mMapPixels.mRow < pacmanPixelPosition.mRow ||
+			pacmanPixelPosition.mColumn < 0 || mBoundaries.mMapPixels.mColumn < pacmanPixelPosition.mColumn)
 		{
 			return true;
 		}
@@ -169,38 +162,4 @@ bool PacmanController::PacmanIsInNextField(GameField* nextField)
 		}
 	}
 	return true;
-}
-
-Point PacmanController::GetGridPosition(Point positionInPixels)
-{
-	int adjustment = mConfig.MAP_START_ROW + mConfig.FIELD_SIZE + mConfig.FIELD_OFFSET;
-	int divisor = mConfig.FIELD_SIZE + mConfig.FIELD_OFFSET;
-	int row = (positionInPixels.mRow - adjustment) / divisor;
-	int column = (positionInPixels.mColumn - adjustment) / divisor;
-
-	return Point(row + 1, column + 1);
-}
-
-//int PacmanController::GetStepsToNextField(Direction direction, GameField* nextField)
-//{
-//	if (direction == LEFT || direction == RIGHT)
-//	{
-//		return abs(mPacman->GetCenter().mColumn - nextField->GetCenter().mColumn);
-//	}
-//	else if (direction == UP || direction == DOWN)
-//	{
-//		return abs(mPacman->GetCenter().mRow - nextField->GetCenter().mRow);
-//	}
-//	return 0;
-//}
-
-void PacmanController::DrawScore()
-{
-	ci::TextLayout simple;
-	ci::gl::Texture2dRef texture;
-	simple.setFont(ci::Font("Arial", 24));
-	simple.setColor(ci::Color(1, 0, 0.1f));
-	simple.addLine("Score: " + boost::lexical_cast<std::string>(mScore));
-	texture = ci::gl::Texture2d::create(simple.render(true, false));
-	ci::gl::draw(texture, ci::vec2(10, mMapPixelBoundaries.mRow+10));
 }

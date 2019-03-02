@@ -13,7 +13,7 @@ enum Direction
 	NONE
 };
 
-inline const char* ToString(Direction dir)
+inline const char* ToString(Direction dir) // for debugging
 {
 	switch (dir)
 	{
@@ -21,7 +21,7 @@ inline const char* ToString(Direction dir)
 	case DOWN:   return "DOWN";
 	case RIGHT:  return "RIGHT";
 	case UP:     return "UP";
-	default:      return "NONE";
+	default:     return "NONE";
 	}
 }
 
@@ -47,7 +47,7 @@ struct Point
 	}
 };
 
-inline std::ostream& operator<<(std::ostream& output, const Point& point)
+inline std::ostream& operator<<(std::ostream& output, const Point& point) // for debugging
 {
 	output << "row=" << point.mRow << ", column=" << point.mColumn;
 	return output;
@@ -63,6 +63,7 @@ public:
 	virtual void Draw() = 0;
 	virtual void KeyDown(Direction direction) = 0;
 	virtual void SetGameActive(bool gameActive) = 0;
+	virtual void OnScoreUpdate(int score) = 0;
 };
 
 class GameField
@@ -93,7 +94,6 @@ public:
 	virtual void SetCenter(const Point& center) = 0;
 	virtual const Point& GetGridPosition() const = 0;
 	virtual void SetGridPosition(const Point& position) = 0;
-	//virtual void KeyDown(Direction direction) = 0;
 	virtual void MakeStep() = 0;
 	virtual void Draw() = 0;
 };
@@ -104,3 +104,9 @@ typedef std::vector<std::vector<FieldPtr>> Grid;
 typedef std::shared_ptr<Grid> GridPtr;
 typedef std::vector<ControllerPtr> ObjectControllers;
 //typedef std::vector<Ghost> Ghosts;
+
+struct Boundaries
+{
+	Point mGrid{ 0,0 };
+	Point mMapPixels{ 0,0 };
+};

@@ -3,10 +3,10 @@
 #include <cinder/Color.h>
 #include <boost/assign/list_of.hpp>
 #include <boost/unordered_map.hpp>
+#include <chrono>
 
 using boost::assign::map_list_of;
-
-
+using namespace std::chrono_literals;
 struct Config
 {
 	const int FIELD_SIZE = 12;
@@ -17,7 +17,7 @@ struct Config
 	const int PACMAN_RADIUS = 6;
 	const int PACMAN_MOUTH_SPEED = 3;
 
-	const int PACMAN_UPDATE_INTERVAL = 500; // milliseconds
+	const std::chrono::milliseconds PACMAN_UPDATE_INTERVAL{ 50ms };
 	const int PACMAN_STEP_IN_PX = 4; // per update interval
 
 	const int MAP_START_ROW = 6;
@@ -28,6 +28,7 @@ struct Config
 	ci::Color YELLOW{ 1, 1, 0 };
 	ci::Color BLUE{ 0, 0, 1 };
 	ci::Color BLACK{ 0, 0, 0 };
+	ci::Color RED{ 1, 0, 0.1 };
 
 	const int BASIC_POINTS = 1;
 	const int COIN_POINTS = 3;
@@ -42,6 +43,7 @@ enum FIELD
 	PACMAN,
 	GHOST
 };
+
 const boost::unordered_map<const std::string, FIELD> stringToField = map_list_of
 ("W", WALL)
 ("-", BASIC)

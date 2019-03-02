@@ -8,47 +8,38 @@ typedef std::unique_ptr<Pacman> PacmanPtr;
 class PacmanController : public IController
 {
 public:
-	PacmanController(const Config& config, GridPtr grid, PacmanPtr& pacman)
+	PacmanController(const Config& config, GridPtr grid, PacmanPtr& pacman, Boundaries& boundaries)
 		:
 		mConfig(config),
 		mGrid(grid),
-		mPacman(std::move(pacman))
+		mPacman(std::move(pacman)),
+		mBoundaries(boundaries)
 	{
-		int maxRows = mGrid->size();
-		int maxCols = mGrid->at(0).size();
-		mGridBoundaries = Point(maxRows, maxCols);
-		int maxPixelRows = (maxRows * mConfig.FIELD_SIZE) + ((maxRows - 1) * mConfig.FIELD_OFFSET) - mConfig.MAP_START_ROW;
-		int maxPixelCols = (maxCols * mConfig.FIELD_SIZE) + ((maxCols - 1) * mConfig.FIELD_OFFSET) - mConfig.MAP_START_COLUMN;
-		mMapPixelBoundaries = Point(maxPixelRows, maxPixelCols);
 	}
 
 	// IController
 	void Setup() override {};
 	void Update(double delta) override;
-	void Draw() override { mPacman->Draw(); DrawScore(); }
+	void Draw() override { mPacman->Draw(); }
 	void KeyDown(Direction direction) override;
 	void SetGameActive(bool gameActive) override { mGameActive = gameActive; }
+	void OnScoreUpdate(int score) override {};
+	void SetScoreController(IController* scoreController) { mScoreController = scoreController; }
 
 private:
-	//void AdjustPixelPosition(Direction direction, GameField* nextField);
 	bool PacmanAllowedToEnterNextField(Direction direction, GameField* nextField);
 	bool PacmanCanMoveInItsOwnField();
 	GameField* GetNextField(Direction direction);
 	bool PacmanIsInNextField(GameField* nextField);
-	Point GetGridPosition(Point positionInPixels);
-	void DrawScore();
 
 private:
 	GridPtr mGrid;
 	PacmanPtr mPacman;
+	IController* mScoreController;
 	const Config& mConfig;
-	double mLastUpdateTime = 0.0;
 	bool mGameActive{ false };
-	//std::chrono::milliseconds mUpdateInterval{ 0 };
-	//std::chrono::duration<double>mTimeSinceLastUpdate{ 0.0 };
-	Point mGridBoundaries{ 0,0 };
-	Point mMapPixelBoundaries{ 0,0 };
-	int mScore{ 0 };
-	int mStepsToNextField{ 0 };
+	std::chrono::milliseconds mUpdateInterval{ 0ms };
+	std::chrono::duration<double> mLastUpdate{ 0.0 };
+	Boundaries& mBoundaries;
 	GameField* mNextField = nullptr;
 };

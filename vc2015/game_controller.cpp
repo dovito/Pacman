@@ -1,12 +1,14 @@
 #include "game_controller.h"
-#include <cinder/app/KeyEvent.h>
-#include <cinder/Log.h>
+
 #include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
+#include <cinder/Text.h>
 #include <fstream>
 
 void GameController::Setup()
 {
 	CreateGameWorld();
+	SetupMapBoundaries();
 	SetupGameObjectControllers();
 }
 
@@ -21,11 +23,6 @@ void GameController::Update(double elapsedTime)
 
 void GameController::Draw()
 {
-	for (auto& objectController : mObjectControllers)
-	{
-		objectController->Draw();
-	}
-
 	for (auto& row : *mGrid)
 	{
 		for (auto& field : row)
@@ -33,6 +30,13 @@ void GameController::Draw()
 			field->Draw();
 		}
 	}
+
+	for (auto& objectController : mObjectControllers)
+	{
+		objectController->Draw();
+	}
+
+	DrawScore();
 }
 
 void GameController::KeyDown(Direction direction)
@@ -45,42 +49,42 @@ void GameController::KeyDown(Direction direction)
 
 void GameController::CreateGameWorld()
 {
-	
+	Grid grid;
 	int fieldRow = mConfig.MAP_START_ROW;
 	std::ifstream inFile(mConfig.MAP_FILE_NAME);
-	Grid grid;
+	
 	for (std::string line; getline(inFile, line);)
 	{
 		int fieldColumn = mConfig.MAP_START_COLUMN;
 		std::vector<std::string> tokens;
 		boost::split(tokens, line, boost::is_any_of(","));
-
 		std::vector<FieldPtr> gameFields;
+
 		for (auto token : tokens)
 		{
 			Point center(fieldRow, fieldColumn);
-			Point mapPosition{ static_cast<int>(grid.size()), static_cast<int>(gameFields.size()) };
+			Point gridPosition{ static_cast<int>(grid.size()), static_cast<int>(gameFields.size()) };
 
 			auto it = stringToField.find(token);
 			if (it != stringToField.end())
 			{
 				switch (it->second)
 				{
-				case FIELD::WALL:
-					gameFields.push_back(std::make_unique<Wall>(center, mapPosition, mConfig));
+				case WALL:
+					gameFields.push_back(std::make_unique<Wall>(center, gridPosition, mConfig));
 					break;
-				case FIELD::BASIC:
-					gameFields.push_back(std::make_unique<BasicField>(center, mapPosition, mConfig));
+				case BASIC:
+					gameFields.push_back(std::make_unique<BasicField>(center, gridPosition, mConfig));
 					break;
-				case FIELD::COIN:
-					gameFields.push_back(std::make_unique<Coin>(center, mapPosition, mConfig));
+				case COIN:
+					gameFields.push_back(std::make_unique<Coin>(center, gridPosition, mConfig));
 					break;
-				case FIELD::PACMAN:
-					gameFields.push_back(std::make_unique<BasicField>(center, mapPosition, mConfig));
-					mPacman = std::make_unique<Pacman>(center, mapPosition, mConfig);
+				case PACMAN:
+					gameFields.push_back(std::make_unique<EmptyField>(center, gridPosition, mConfig));
+					mPacman = std::make_unique<Pacman>(center, gridPosition, mConfig);
 					break;
 				default: // EMPTY
-					gameFields.push_back(std::make_unique<EmptyField>(center, mapPosition, mConfig));
+					gameFields.push_back(std::make_unique<EmptyField>(center, gridPosition, mConfig));
 					break;
 				}
 			}
@@ -92,9 +96,21 @@ void GameController::CreateGameWorld()
 	mGrid = std::make_shared<Grid>(std::move(grid));
 }
 
+void GameController::SetupMapBoundaries()
+{
+	int maxRows = mGrid->size();
+	int maxCols = mGrid->at(0).size();
+	mBoundaries.mGrid = Point(maxRows, maxCols);
+	int maxPixelRows = (maxRows * mConfig.FIELD_SIZE) + ((maxRows - 1) * mConfig.FIELD_OFFSET) - mConfig.MAP_START_ROW;
+	int maxPixelCols = (maxCols * mConfig.FIELD_SIZE) + ((maxCols - 1) * mConfig.FIELD_OFFSET) - mConfig.MAP_START_COLUMN;
+	mBoundaries.mMapPixels = Point(maxPixelRows, maxPixelCols);
+}
+
 void GameController::SetupGameObjectControllers()
 {
-	mObjectControllers.push_back(std::make_unique<PacmanController>(mConfig, mGrid,mPacman));
+	std::unique_ptr<PacmanController> pacmanController = std::make_unique<PacmanController>(mConfig, mGrid, mPacman, mBoundaries);
+	pacmanController->SetScoreController(this);
+	mObjectControllers.push_back(std::move(pacmanController));
 }
 
 void GameController::SetGameActive(bool gameActive)
@@ -103,4 +119,20 @@ void GameController::SetGameActive(bool gameActive)
 	{
 		objectController->SetGameActive(gameActive);
 	}
+}
+
+void GameController::OnScoreUpdate(int score)
+{
+	mScore += score;
+}
+
+void GameController::DrawScore()
+{
+	ci::TextLayout simple;
+	ci::gl::Texture2dRef texture;
+	simple.setFont(ci::Font("Arial", 24));
+	simple.setColor(mConfig.RED);
+	simple.addLine("Score: " + boost::lexical_cast<std::string>(mScore));
+	texture = ci::gl::Texture2d::create(simple.render(true, false));
+	ci::gl::draw(texture, ci::vec2(10, mBoundaries.mMapPixels.mRow + 10));
 }

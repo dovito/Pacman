@@ -2,13 +2,13 @@
 
 void Pacman::UpdateMouth(const double delta)
 {
-	if (mMouthState == MouthState::CLOSING)
+	if (mMouthState == CLOSING)
 	{
 		mOpenMouth -= delta * 2.0f;
 		if (mOpenMouth <= 0.0f)
 		{
 			mOpenMouth = 0.0f;
-			mMouthState = MouthState::OPENING;
+			mMouthState = OPENING;
 		}
 	}
 	else
@@ -17,7 +17,7 @@ void Pacman::UpdateMouth(const double delta)
 		if (mOpenMouth >= 1.0f)
 		{
 			mOpenMouth = 1.0f;
-			mMouthState = MouthState::CLOSING;
+			mMouthState = CLOSING;
 		}
 	}
 }
@@ -26,16 +26,16 @@ void Pacman::MakeStep()
 {
 	switch (mDirection)
 	{
-	case Direction::DOWN:
+	case DOWN:
 		mCenter.mRow += mStepSize;
 		break;
-	case Direction::UP:
+	case UP:
 		mCenter.mRow -= mStepSize;
 		break;
-	case Direction::RIGHT:
+	case RIGHT:
 		mCenter.mColumn += mStepSize;
 		break;
-	case Direction::LEFT:
+	case LEFT:
 		mCenter.mColumn -= mStepSize;
 		break;
 	default:
@@ -56,13 +56,6 @@ void Pacman::Draw()
 
 		ci::gl::drawSolidTriangle(p1, p2, center);
 	}
-
-	/*body.push_back(center);
-	ci::PolyLine2f pl(body);
-	pl.setClosed();
-
-	ci::gl::color(1.0f, 1.0f, 1.0f);
-	ci::gl::draw(pl);*/
 }
 
 std::vector<ci::vec2> Pacman::GetSkeleton()
@@ -104,10 +97,10 @@ std::vector<ci::vec2> Pacman::GetBorder(std::vector<ci::vec2>& skeleton)
 
 void Pacman::AlignDirectionAngle(float& angle)
 {
-	if (mDirection == Direction::DOWN)
+	if (mDirection == DOWN)
 		angle += M_PI / 2.0f;
-	else if (mDirection == Direction::LEFT)
+	else if (mDirection == LEFT)
 		angle += M_PI;
-	else if (mDirection == Direction::UP)
+	else if (mDirection == UP)
 		angle += M_PI * 3.0f / 2.0f;
 }
