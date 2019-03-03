@@ -30,7 +30,6 @@ private:
 	std::vector<ci::vec2> GetSkeleton();
 	std::vector<ci::vec2> GetBody();
 	void DrawBody(const std::vector<ci::vec2>& body);
-	//void AlignDirectionAngle(float& angle);
 
 private:
 	Point mCenter;

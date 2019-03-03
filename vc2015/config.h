@@ -10,13 +10,16 @@ using namespace std::chrono_literals;
 
 struct Config
 {
+	static const int WINDOW_SIZE_X = 500;
+	static const int WINDOW_SIZE_Y = 350;
+
 	const int FIELD_SIZE = 12;
 	const int FIELD_OFFSET = 2;
 
 	const int BASIC_FIELD_RADIUS = 1;
 	const int COIN_FIELD_RADIUS = 3;
 	const int PACMAN_RADIUS = 6;
-	const int PACMAN_MOUTH_SPEED = 3;
+	//const int PACMAN_MOUTH_SPEED = 3;
 
 	const std::chrono::milliseconds PACMAN_UPDATE_INTERVAL{ 50ms };
 	const int PACMAN_STEP_IN_PX = 4; // per update interval
@@ -26,17 +29,18 @@ struct Config
 	const int GHOST_STEP_IN_PX_SLOW = 2; // per update interval
 	const int RELEASE_GHOSTS = 5; // after 5 seconds of game start
 
-	const int MAP_START_ROW = 6;
-	const int MAP_START_COLUMN = 6;
+	const int MAP_START_ROW = 20;
+	const int MAP_START_COLUMN = 20;
 
 	const std::string MAP_FILE_NAME = "C:\\Users\\Dovile\\Desktop\\pman\\Pacman\\map.txt";
 
-	ci::Color YELLOW{ 1, 1, 0 };
-	ci::Color BLUE{ 0, 0, 1 };
-	ci::Color BLACK{ 0, 0, 0 };
-	ci::Color RED{ 1, 0, 0.1 };
+	ci::Color YELLOW{ 1.0, 1.0, 0.0 };
+	ci::Color BLUE{ 0.0, 0.0, 1.0 };
+	ci::Color BLACK{ 0.0, 0.0, 0.0 };
+	ci::Color RED{ 1.0, 0.0, 0.1 };
 	ci::Color PINK{ 0.5, 0.0, 0.5 };
 	ci::Color GREEN{ 0.0, 0.5, 0.0 };
+	ci::Color WHITE{ 1.0, 1.0, 1.0 };
 
 	const int BASIC_POINTS = 1;
 	const int COIN_POINTS = 3;

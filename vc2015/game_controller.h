@@ -5,6 +5,7 @@
 #include "game_fields.h"
 #include "pacman_controller.h"
 #include "ghost_controller.h"
+#include "game_curtain_controller.h"
 
 using namespace ci;
 
@@ -22,15 +23,17 @@ public:
 	void Draw() override;
 
 	void KeyDown(Direction direction) override;
-	void SetGameActive(bool gameActive) override;
-	void OnScoreUpdate(int score) override;
+	void UpdateGameState(GameState gameState) override;
+	
+	void OnScoreUpdate(int score);
 
 private:
 	
 	void CreateGameWorld();
 	void SetupMapBoundaries();
-	void SetupGameObjectControllers();
+	void SetupControllers();
 	void DrawScore();
+	void DrawHelpBoard();
 	void ReleaseGhosts();
 
 private:
@@ -39,8 +42,8 @@ private:
 	PacmanPtr mPacman;
 	Boundaries mBoundaries;
 	int mScore{ 0 };
-	bool mGameActive{ false };
-	ObjectControllers mObjectControllers;
+	GameState mGameState{ NOT_STARTED };
+	Controllers mControllers;
 	std::vector<GhostPtr> mGhosts;
 	bool mGhostsReleased{ false };
 

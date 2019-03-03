@@ -20,10 +20,9 @@ public:
 	// IController
 	void Setup() override {};
 	void Update(double delta) override;
-	void Draw() override { mGhost->Draw(); }
+	void Draw() override;
 	void KeyDown(Direction direction) override {};
-	void SetGameActive(bool gameActive) override { mGameActive = gameActive; }
-	void OnScoreUpdate(int score) override {};
+	void UpdateGameState(GameState gameState) override { mGameState = gameState;  }
 
 private:
 	bool GhostAllowedToEnterNextField(Direction direction, GameField* nextField);
@@ -36,7 +35,7 @@ private:
 	GridPtr mGrid;
 	GhostPtr mGhost;
 	const Config& mConfig;
-	bool mGameActive{ false };
+	GameState mGameState{ NOT_STARTED };
 	std::chrono::milliseconds mUpdateInterval{ 0ms };
 	std::chrono::duration<double> mLastUpdate{ 0.0 };
 	Boundaries& mBoundaries;

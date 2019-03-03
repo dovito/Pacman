@@ -1,13 +1,21 @@
 #include "ghost_controller.h"
 #include <stdlib.h>
 
+void GhostController::Draw()
+{
+	if (mGameState == ACTIVE)
+	{
+		mGhost->Draw();
+	}
+}
+
 void GhostController::Update(double elapsedTime)
 {
 	auto updateNow = std::chrono::duration<double>(elapsedTime);
 	auto timeDelta = updateNow - mLastUpdate;
 	mUpdateInterval += std::chrono::duration_cast<std::chrono::milliseconds>(timeDelta);
 	mLastUpdate = updateNow;
-	if (mGameActive && mUpdateInterval >= mConfig.PACMAN_UPDATE_INTERVAL)
+	if (mGameState == ACTIVE && mUpdateInterval >= mConfig.PACMAN_UPDATE_INTERVAL)
 	{
 		mUpdateInterval = 0ms;
 		Direction direction = GetRandomDirection();
@@ -132,8 +140,8 @@ bool GhostController::GhostIsInNextField(GameField* nextField)
 	if (mGhost->GetGridPosition() != nextField->GetGridPosition())
 	{
 		auto pacmanPixelPosition = mGhost->GetCenter();
-		if (pacmanPixelPosition.mRow < 0 || mBoundaries.mMapPixels.mRow < pacmanPixelPosition.mRow ||
-			pacmanPixelPosition.mColumn < 0 || mBoundaries.mMapPixels.mColumn < pacmanPixelPosition.mColumn)
+		if (pacmanPixelPosition.mRow < mBoundaries.mMapPixelsMin.mRow || mBoundaries.mMapPixelsMax.mRow < pacmanPixelPosition.mRow ||
+			pacmanPixelPosition.mColumn < mBoundaries.mMapPixelsMin.mColumn || mBoundaries.mMapPixelsMax.mColumn < pacmanPixelPosition.mColumn)
 		{
 			return true;
 		}

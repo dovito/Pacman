@@ -4,6 +4,14 @@
 #include <cinder/Rect.h>
 #include <iostream>
 
+enum GameState
+{
+	NOT_STARTED,
+	ACTIVE,
+	PAUSED,
+	OVER
+};
+
 enum Direction
 {
 	LEFT,
@@ -62,10 +70,8 @@ public:
 	virtual void Update(double elapsedTime) = 0;
 	virtual void Draw() = 0;
 	virtual void KeyDown(Direction direction) = 0;
-	virtual void SetGameActive(bool gameActive) = 0;
-	virtual void OnScoreUpdate(int score) = 0;
+	virtual void UpdateGameState(GameState gameState) = 0;
 };
-
 class GameField
 {
 public:
@@ -103,11 +109,11 @@ typedef std::unique_ptr<GameField> FieldPtr;
 typedef std::unique_ptr<IController> ControllerPtr;
 typedef std::vector<std::vector<FieldPtr>> Grid;
 typedef std::shared_ptr<Grid> GridPtr;
-typedef std::vector<ControllerPtr> ObjectControllers;
-//typedef std::vector<Ghost> Ghosts;
+typedef std::vector<ControllerPtr> Controllers;
 
 struct Boundaries
 {
 	Point mGrid{ 0,0 };
-	Point mMapPixels{ 0,0 };
+	Point mMapPixelsMax{ 0, 0 };
+	Point mMapPixelsMin{ 0, 0 };
 };

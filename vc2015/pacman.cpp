@@ -73,8 +73,8 @@ std::vector<ci::vec2> Pacman::GetSkeleton()
 
 	for (float angle = startAngle; angle <= endAngle; angle += angleStep)
 	{
-		const float x = mConfig.PACMAN_RADIUS * std::cos(angle);
-		const float y = mConfig.PACMAN_RADIUS * std::sin(angle);
+		const float x = mRadius * std::cos(angle);
+		const float y = mRadius * std::sin(angle);
 		skeleton.emplace_back(x, y);
 	}
 

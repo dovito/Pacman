@@ -3,8 +3,6 @@
 #include "game_if.h"
 #include "pacman.h"
 
-typedef std::unique_ptr<Pacman> PacmanPtr;
-
 class PacmanController : public IController
 {
 public:
@@ -20,12 +18,11 @@ public:
 	// IController
 	void Setup() override {};
 	void Update(double delta) override;
-	void Draw() override { mPacman->Draw(); }
+	void Draw() override;
 	void KeyDown(Direction direction) override;
-	void SetGameActive(bool gameActive) override { mGameActive = gameActive; }
-	void OnScoreUpdate(int score) override {};
+	void UpdateGameState(GameState gameState) override { mGameState = gameState; }
 
-	void SetScoreUpdateCallback(std::function<void(int)> callBack) { mScoreUpdate = callBack; }
+	void SetScoreUpdateCallback(std::function<void(int)> callBack) { mUpdateScore = callBack; }
 
 private:
 	bool PacmanAllowedToEnterNextField(Direction direction, GameField* nextField);
@@ -38,7 +35,7 @@ private:
 	PacmanPtr mPacman;
 	IController* mScoreController;
 	const Config& mConfig;
-	bool mGameActive{ false };
+	GameState mGameState{ NOT_STARTED };
 	std::chrono::milliseconds mUpdateInterval{ 0ms };
 	std::chrono::duration<double> mLastUpdate{ 0.0 };
 	Boundaries& mBoundaries;

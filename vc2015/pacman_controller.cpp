@@ -1,5 +1,13 @@
 #include "pacman_controller.h"
 
+void PacmanController::Draw()
+{
+	if (mGameState == ACTIVE)
+	{
+		mPacman->Draw();
+	}
+}
+
 void PacmanController::Update(double elapsedTime)
 {	
 	auto updateNow = std::chrono::duration<double>(elapsedTime);
@@ -7,7 +15,7 @@ void PacmanController::Update(double elapsedTime)
 	mUpdateInterval += std::chrono::duration_cast<std::chrono::milliseconds>(timeDelta);
 	mPacman->UpdateMouth(timeDelta.count());
 
-	if (mGameActive && mUpdateInterval >= mConfig.PACMAN_UPDATE_INTERVAL)
+	if (mGameState == ACTIVE && mUpdateInterval >= mConfig.PACMAN_UPDATE_INTERVAL)
 	{
 		Direction direction = mPacman->GetDirection();
 		GameField* nextField = GetNextField(direction);
@@ -143,8 +151,8 @@ bool PacmanController::PacmanIsInNextField(GameField* nextField)
 	if (mPacman->GetGridPosition() != nextField->GetGridPosition())
 	{
 		auto pacmanPixelPosition = mPacman->GetCenter();
-		if (pacmanPixelPosition.mRow < 0 || mBoundaries.mMapPixels.mRow < pacmanPixelPosition.mRow ||
-			pacmanPixelPosition.mColumn < 0 || mBoundaries.mMapPixels.mColumn < pacmanPixelPosition.mColumn)
+		if (pacmanPixelPosition.mRow < mBoundaries.mMapPixelsMin.mRow || mBoundaries.mMapPixelsMax.mRow < pacmanPixelPosition.mRow ||
+			pacmanPixelPosition.mColumn < mBoundaries.mMapPixelsMin.mColumn || mBoundaries.mMapPixelsMax.mColumn < pacmanPixelPosition.mColumn)
 		{
 			return true;
 		}

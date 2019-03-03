@@ -9,14 +9,14 @@ void GameController::Setup()
 {
 	CreateGameWorld();
 	SetupMapBoundaries();
-	SetupGameObjectControllers();
+	SetupControllers();
 }
 
 void GameController::Update(double elapsedTime)
 {
-	for (auto& objectController : mObjectControllers)
+	for (auto& controller : mControllers)
 	{
-		objectController->Update(elapsedTime);
+		controller->Update(elapsedTime);
 	}
 	
 	if (!mGhostsReleased && elapsedTime > 5.0)
@@ -28,27 +28,24 @@ void GameController::Update(double elapsedTime)
 
 void GameController::Draw()
 {
-	for (auto& row : *mGrid)
+	
+	for (auto& controller : mControllers)
 	{
-		for (auto& field : row)
-		{
-			field->Draw();
-		}
+		controller->Draw();
 	}
 
-	for (auto& objectController : mObjectControllers)
+	if (mGameState == ACTIVE)
 	{
-		objectController->Draw();
+		DrawScore();
+		DrawHelpBoard();
 	}
-
-	DrawScore();
 }
 
 void GameController::KeyDown(Direction direction)
 {
-	for (auto& objectController : mObjectControllers)
+	for (auto& controller : mControllers)
 	{
-		objectController->KeyDown(direction);
+		controller->KeyDown(direction);
 	}
 }
 
@@ -113,29 +110,37 @@ void GameController::SetupMapBoundaries()
 	int maxRows = mGrid->size();
 	int maxCols = mGrid->at(0).size();
 	mBoundaries.mGrid = Point(maxRows, maxCols);
-	int maxPixelRows = (maxRows * mConfig.FIELD_SIZE) + ((maxRows - 1) * mConfig.FIELD_OFFSET) - mConfig.MAP_START_ROW;
-	int maxPixelCols = (maxCols * mConfig.FIELD_SIZE) + ((maxCols - 1) * mConfig.FIELD_OFFSET) - mConfig.MAP_START_COLUMN;
-	mBoundaries.mMapPixels = Point(maxPixelRows, maxPixelCols);
+
+	int mapRowOffset = static_cast<int>(mConfig.MAP_START_ROW - mConfig.FIELD_SIZE / 2);
+	int mapColOffset = static_cast<int>(mConfig.MAP_START_COLUMN - mConfig.FIELD_SIZE / 2);
+	int maxPixelRows = (maxRows * mConfig.FIELD_SIZE) + ((maxRows - 1) * mConfig.FIELD_OFFSET) + mapRowOffset;
+	int maxPixelCols = (maxCols * mConfig.FIELD_SIZE) + ((maxCols - 1) * mConfig.FIELD_OFFSET) + mapColOffset;
+	
+	mBoundaries.mMapPixelsMax = Point(maxPixelRows, maxPixelCols);
+	mBoundaries.mMapPixelsMin = Point(mapRowOffset, mapColOffset);
 }
 
-void GameController::SetupGameObjectControllers()
+void GameController::SetupControllers()
 {
 	std::unique_ptr<PacmanController> pacmanController = std::make_unique<PacmanController>(mConfig, mGrid, mPacman, mBoundaries);
 	pacmanController->SetScoreUpdateCallback([this](int score) {mScore += score; });
-	mObjectControllers.push_back(std::move(pacmanController));
+	mControllers.push_back(std::move(pacmanController));
 	
 	for (auto& ghost : mGhosts)
 	{
-		mObjectControllers.push_back(std::make_unique<GhostController>(mConfig, mGrid, ghost, mBoundaries)); 
+		mControllers.push_back(std::make_unique<GhostController>(mConfig, mGrid, ghost, mBoundaries)); 
 	}
+
+	mControllers.push_back(std::make_unique<GameCurtainController>(mConfig, mGrid));
 }
 
-void GameController::SetGameActive(bool gameActive)
+void GameController::UpdateGameState(GameState gameState)
 {
-	for (auto& objectController : mObjectControllers)
+	for (auto& objectController : mControllers)
 	{
-		objectController->SetGameActive(gameActive);
+		objectController->UpdateGameState(gameState);
 	}
+	mGameState = gameState;
 }
 
 void GameController::OnScoreUpdate(int score)
@@ -145,14 +150,31 @@ void GameController::OnScoreUpdate(int score)
 
 void GameController::DrawScore()
 {
+	ci::gl::color(mConfig.RED);
+
 	ci::TextLayout simple;
 	ci::gl::Texture2dRef texture;
-	simple.setFont(ci::Font("Arial", 24));
+	simple.setFont(ci::Font("Arial", 28));
 	simple.setColor(mConfig.RED);
 	simple.addLine("Score: " + boost::lexical_cast<std::string>(mScore));
 	texture = ci::gl::Texture2d::create(simple.render(true, false));
-	ci::gl::draw(texture, ci::vec2(10, mBoundaries.mMapPixels.mRow + 10));
+	ci::gl::draw(texture, ci::vec2(mBoundaries.mMapPixelsMin.mColumn, mBoundaries.mMapPixelsMax.mRow + 5));
 }
+
+void GameController::DrawHelpBoard()
+{
+	ci::gl::color(mConfig.YELLOW);
+
+	ci::TextLayout simple;
+	ci::gl::Texture2dRef texture;
+	simple.setFont(ci::Font("Arial", 20));
+	simple.setColor(mConfig.YELLOW);
+	simple.addLine("pres [ESC] to pause");
+	texture = ci::gl::Texture2d::create(simple.render(true, false));
+	auto columnOffset = texture->getWidth();
+	ci::gl::draw(texture, ci::vec2(mBoundaries.mMapPixelsMax.mColumn - columnOffset, mBoundaries.mMapPixelsMax.mRow + 5));
+}
+
 void GameController::ReleaseGhosts()
 {
 	for (auto& row : *mGrid)

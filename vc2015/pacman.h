@@ -13,7 +13,8 @@ public:
 		mCenter(center),
 		mMapPosition(mapPosition),
 		mConfig(config),
-		mStepSize(mConfig.PACMAN_STEP_IN_PX)
+		mStepSize(mConfig.PACMAN_STEP_IN_PX),
+		mRadius(mConfig.PACMAN_RADIUS)
 	{		
 	}
 
@@ -28,6 +29,7 @@ public:
 	void Draw() override;
 	
 	void UpdateMouth(const double delta);
+	void SetRadius(int radius) { mRadius = radius; }
 
 private:
 	std::vector<ci::vec2> GetSkeleton();
@@ -45,9 +47,10 @@ private:
 	Point mMapPosition;
 	const Config& mConfig;
 	Direction mDirection{ Direction::LEFT };
-	float mOpenMouth{ 1.0f };
 	MouthState mMouthState{ MouthState::CLOSING };
+	float mOpenMouth{ 1.0f };
 	int mStepSize;
-	bool mAllowedToMove{ false };
+	int mRadius;
 };
 
+typedef std::unique_ptr<Pacman> PacmanPtr;
