@@ -1,7 +1,6 @@
 #include "game_controller.h"
 
 #include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
 #include <cinder/Text.h>
 #include <fstream>
 
@@ -14,38 +13,38 @@ void GameController::Setup()
 
 void GameController::Update(double elapsedTime)
 {
-	for (auto& controller : mControllers)
+	for (auto& objectController : mObjectControllers)
 	{
-		controller->Update(elapsedTime);
+		objectController->Update(elapsedTime);
+	}
+	double timeDelta = elapsedTime - mTimeSinceLastUpdate;
+	mTimeSinceLastUpdate = elapsedTime;
+	if (mGameState == ACTIVE)
+	{
+		mTimeSinceGameActive += std::chrono::duration<double>(timeDelta);
+		if (!mGhostsReleased && mTimeSinceGameActive > mConfig.RELEASE_GHOSTS)
+		{
+			ReleaseGhosts();
+		}
 	}
 	
-	if (!mGhostsReleased && elapsedTime > 5.0)
-	{
-		ReleaseGhosts();
-	}
 }
 
 
 void GameController::Draw()
 {
 	
-	for (auto& controller : mControllers)
+	for (auto& objectController : mObjectControllers)
 	{
-		controller->Draw();
-	}
-
-	if (mGameState == ACTIVE)
-	{
-		DrawScore();
-		DrawHelpBoard();
+		objectController->Draw();
 	}
 }
 
 void GameController::KeyDown(Direction direction)
 {
-	for (auto& controller : mControllers)
+	for (auto& objectController : mObjectControllers)
 	{
-		controller->KeyDown(direction);
+		objectController->KeyDown(direction);
 	}
 }
 
@@ -122,57 +121,31 @@ void GameController::SetupMapBoundaries()
 
 void GameController::SetupControllers()
 {
-	std::unique_ptr<PacmanController> pacmanController = std::make_unique<PacmanController>(mConfig, mGrid, mPacman, mBoundaries);
-	pacmanController->SetScoreUpdateCallback([this](int score) {mScore += score; });
-	mControllers.push_back(std::move(pacmanController));
+	auto pacmanController = std::make_unique<PacmanController>(mConfig, mGrid, mPacman, mBoundaries);
+	auto curtainController = std::make_unique<GameCurtainController>(mConfig, mGrid, mBoundaries);
+	mCurtainController = curtainController.get();
+	pacmanController->SetScoreUpdateCallback([this](int score)
+	{
+		mCurtainController->UpdateScore(score);
+	
+	});
+
+	mObjectControllers.push_back(std::move(pacmanController));
+	mObjectControllers.push_back(std::move(curtainController));
 	
 	for (auto& ghost : mGhosts)
 	{
-		mControllers.push_back(std::make_unique<GhostController>(mConfig, mGrid, ghost, mBoundaries)); 
+		mObjectControllers.push_back(std::make_unique<GhostController>(mConfig, mGrid, ghost, mBoundaries));
 	}
-
-	mControllers.push_back(std::make_unique<GameCurtainController>(mConfig, mGrid));
 }
 
 void GameController::UpdateGameState(GameState gameState)
 {
-	for (auto& objectController : mControllers)
+	for (auto& objectController : mObjectControllers)
 	{
 		objectController->UpdateGameState(gameState);
 	}
 	mGameState = gameState;
-}
-
-void GameController::OnScoreUpdate(int score)
-{
-	mScore += score;
-}
-
-void GameController::DrawScore()
-{
-	ci::gl::color(mConfig.RED);
-
-	ci::TextLayout simple;
-	ci::gl::Texture2dRef texture;
-	simple.setFont(ci::Font("Arial", 28));
-	simple.setColor(mConfig.RED);
-	simple.addLine("Score: " + boost::lexical_cast<std::string>(mScore));
-	texture = ci::gl::Texture2d::create(simple.render(true, false));
-	ci::gl::draw(texture, ci::vec2(mBoundaries.mMapPixelsMin.mColumn, mBoundaries.mMapPixelsMax.mRow + 5));
-}
-
-void GameController::DrawHelpBoard()
-{
-	ci::gl::color(mConfig.YELLOW);
-
-	ci::TextLayout simple;
-	ci::gl::Texture2dRef texture;
-	simple.setFont(ci::Font("Arial", 20));
-	simple.setColor(mConfig.YELLOW);
-	simple.addLine("pres [ESC] to pause");
-	texture = ci::gl::Texture2d::create(simple.render(true, false));
-	auto columnOffset = texture->getWidth();
-	ci::gl::draw(texture, ci::vec2(mBoundaries.mMapPixelsMax.mColumn - columnOffset, mBoundaries.mMapPixelsMax.mRow + 5));
 }
 
 void GameController::ReleaseGhosts()

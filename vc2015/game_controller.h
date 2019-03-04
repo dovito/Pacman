@@ -24,16 +24,13 @@ public:
 
 	void KeyDown(Direction direction) override;
 	void UpdateGameState(GameState gameState) override;
-	
-	void OnScoreUpdate(int score);
 
 private:
 	
 	void CreateGameWorld();
 	void SetupMapBoundaries();
 	void SetupControllers();
-	void DrawScore();
-	void DrawHelpBoard();
+	
 	void ReleaseGhosts();
 
 private:
@@ -43,7 +40,10 @@ private:
 	Boundaries mBoundaries;
 	int mScore{ 0 };
 	GameState mGameState{ NOT_STARTED };
-	Controllers mControllers;
+	Controllers mObjectControllers;
+	GameCurtainController* mCurtainController = nullptr;
+	double mTimeSinceLastUpdate = 0.0;
+	std::chrono::duration<double> mTimeSinceGameActive{ 0.0 };
 	std::vector<GhostPtr> mGhosts;
 	bool mGhostsReleased{ false };
 

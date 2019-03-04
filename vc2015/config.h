@@ -21,13 +21,15 @@ struct Config
 	const int PACMAN_RADIUS = 6;
 	//const int PACMAN_MOUTH_SPEED = 3;
 
+	const std::chrono::milliseconds CURTAIN_UPDATE_INTERVAL{ 200ms };
+
 	const std::chrono::milliseconds PACMAN_UPDATE_INTERVAL{ 50ms };
 	const int PACMAN_STEP_IN_PX = 4; // per update interval
 
 	const std::chrono::milliseconds GHOST_UPDATE_INTERVAL{ 50ms };
 	const int GHOST_STEP_IN_PX = 4; // per update interval
 	const int GHOST_STEP_IN_PX_SLOW = 2; // per update interval
-	const int RELEASE_GHOSTS = 5; // after 5 seconds of game start
+	const std::chrono::seconds RELEASE_GHOSTS{ 5s }; // after 5 seconds of game start
 
 	const int MAP_START_ROW = 20;
 	const int MAP_START_COLUMN = 20;
