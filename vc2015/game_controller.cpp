@@ -17,6 +17,7 @@ void GameController::Update(double elapsedTime)
 	{
 		objectController->Update(elapsedTime);
 	}
+	
 	double timeDelta = elapsedTime - mTimeSinceLastUpdate;
 	mTimeSinceLastUpdate = elapsedTime;
 	if (mGameState == ACTIVE)
@@ -30,10 +31,8 @@ void GameController::Update(double elapsedTime)
 	
 }
 
-
 void GameController::Draw()
 {
-	
 	for (auto& objectController : mObjectControllers)
 	{
 		objectController->Draw();
