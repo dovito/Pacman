@@ -11,7 +11,7 @@ using namespace ci::app;
 auto prepareSettings = [](App::Settings* settings)
 {
 	log::makeLogger<log::LoggerFile>("pacman_app.log");
-	settings->setWindowSize(500, 350);
+	settings->setWindowSize(Config::WINDOW_SIZE_X, Config::WINDOW_SIZE_Y);
 
 #if defined( CINDER_COCOA_TOUCH )
 	settings->setStatusBarEnabled(false); // FIXME: status bar is always visible?
@@ -43,26 +43,30 @@ void PacmanApp::setup()
 }
 
 void PacmanApp::keyDown(KeyEvent event)
-{
-	Direction direction{ Direction::NONE };
+{	
 	switch (event.getCode())
 	{
 	case KeyEvent::KEY_DOWN:
-		direction = Direction::DOWN; break;
+		mController->KeyDown(DOWN);
+		break;
 	case KeyEvent::KEY_UP:
-		direction = Direction::UP; break;
+		mController->KeyDown(UP);
+		break;
 	case KeyEvent::KEY_LEFT:
-		direction = Direction::LEFT; break;
+		mController->KeyDown(LEFT);
+		break;
 	case KeyEvent::KEY_RIGHT:
-		direction = Direction::RIGHT; break;
+		mController->KeyDown(RIGHT);
+		break;
 	case KeyEvent::KEY_SPACE:
-		mController->SetGameActive(!mGameActive);
-		mGameActive = !mGameActive;
+		mController->UpdateGameState(ACTIVE);
+		break;
+	case KeyEvent::KEY_ESCAPE:
+		mController->UpdateGameState(PAUSED);
 		break;
 	default:
 		break;
-	}
-	mController->KeyDown(direction);
+	}	
 }
 
 void PacmanApp::update()
@@ -75,6 +79,5 @@ void PacmanApp::draw()
 	gl::clear(mConfig.BLACK);
 	mController->Draw();
 }
-
 
 CINDER_APP(PacmanApp, RendererGl, prepareSettings)
