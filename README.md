@@ -1,16 +1,23 @@
-#Setup
+# Setup
 ## Linux
 
 ### Install CMake
+```
 sudo apt-get install cmake
+```
 
 ### Install Clang
+```
 sudo apt-get install clang
+```
 
 To set Clang as the default compiler, select /usr/bin/clang++ when prompted by this command: 
+```
 sudo update-alternatives --config c++
+```
 
 ### Cinder dependencies
+```
 sudo apt-get install libxcursor-dev \
 libxrandr-dev \
 libxinerama-dev \
@@ -31,11 +38,14 @@ libgstreamer-plugins-base1.0-dev \
 gstreamer1.0-libav \
 gstreamer1.0-alsa \
 gstreamer1.0-pulseaudio \
-gstreamer1.0-plugins-bad
+gstreamer1.0-plugins-bad 
+```
 
 ### Fetching and building Cinder
+```
 git clone --recursive https://github.com/cinder/Cinder.git
 cd Cinder
 mkdir build && cd build
 cmake ..
 make -j 8
+```
