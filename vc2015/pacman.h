@@ -29,7 +29,7 @@ public:
 	void Draw() override;
 	
 	void UpdateMouth(const double delta);
-	void SetRadius(int radius) { mRadius = radius; }
+	void SetRadius(float radius) { mRadius = radius; }
 
 private:
 	std::vector<ci::vec2> GetSkeleton();
@@ -50,6 +50,6 @@ private:
 	MouthState mMouthState{ MouthState::CLOSING };
 	float mOpenMouth{ 1.0f };
 	int mStepSize;
-	int mRadius;
+	float mRadius;
 };
 typedef std::unique_ptr<Pacman> PacmanPtr;

@@ -69,7 +69,7 @@ std::vector<ci::vec2> Pacman::GetSkeleton()
 	if (endAngle < startAngle)
 		openMouthAngle += 2.0f * M_PI;
 
-	const float angleStep = 0.2;
+	const float angleStep = 0.05f;
 
 	for (float angle = startAngle; angle <= endAngle; angle += angleStep)
 	{

@@ -18,7 +18,7 @@ struct Config
 
 	const float BASIC_FIELD_RADIUS = 1.0f;
 	const float COIN_FIELD_RADIUS = 3.0f;
-	const int PACMAN_RADIUS = 6;
+	const float PACMAN_RADIUS = 6.0f;
 
 	const std::chrono::milliseconds CURTAIN_UPDATE_INTERVAL{ 200ms };
 

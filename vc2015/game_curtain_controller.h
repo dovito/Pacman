@@ -16,7 +16,7 @@ public:
 	{
 		Point pacmanCenter = Point(mScreenCenter.mRow - 50, mScreenCenter.mColumn);
 		mPacman = std::make_unique<Pacman>(pacmanCenter, Point(0, 0), mConfig);
-		mPacman->SetRadius(30);
+		mPacman->SetRadius(30.0f);
 	}
 
 	// IController
