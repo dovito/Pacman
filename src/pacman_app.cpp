@@ -32,14 +32,14 @@ public:
 
 private:
 	Config mConfig;
-	std::unique_ptr<GameController> mController;
+	GameControllerPtr mGameController;
 	bool mGameActive{ false };
 };
 
 void PacmanApp::setup()
 {
-	mController = std::make_unique<GameController>(mConfig);
-	mController->Setup();
+	mGameController = std::make_unique<GameController>(mConfig);
+	mGameController->Setup();
 }
 
 void PacmanApp::keyDown(KeyEvent event)
@@ -47,22 +47,22 @@ void PacmanApp::keyDown(KeyEvent event)
 	switch (event.getCode())
 	{
 	case KeyEvent::KEY_DOWN:
-		mController->KeyDown(DOWN);
+		mGameController->KeyDown(DOWN);
 		break;
 	case KeyEvent::KEY_UP:
-		mController->KeyDown(UP);
+		mGameController->KeyDown(UP);
 		break;
 	case KeyEvent::KEY_LEFT:
-		mController->KeyDown(LEFT);
+		mGameController->KeyDown(LEFT);
 		break;
 	case KeyEvent::KEY_RIGHT:
-		mController->KeyDown(RIGHT);
+		mGameController->KeyDown(RIGHT);
 		break;
 	case KeyEvent::KEY_SPACE:
-		mController->UpdateGameState(ACTIVE);
+		mGameController->UpdateGameState(ACTIVE);
 		break;
 	case KeyEvent::KEY_ESCAPE:
-		mController->UpdateGameState(PAUSED);
+		mGameController->UpdateGameState(PAUSED);
 		break;
 	default:
 		break;
@@ -71,13 +71,13 @@ void PacmanApp::keyDown(KeyEvent event)
 
 void PacmanApp::update()
 {
-	mController->Update(getElapsedSeconds());
+	mGameController->Update(getElapsedSeconds());
 }
 
 void PacmanApp::draw()
 {
 	gl::clear(mConfig.BLACK);
-	mController->Draw();
+	mGameController->Draw();
 }
 
 CINDER_APP(PacmanApp, RendererGl, prepareSettings)
