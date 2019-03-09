@@ -9,6 +9,13 @@
 
 using namespace ci;
 
+struct GameWorld
+{
+	GameMap mGameMap;
+	std::vector<GhostPtr> mGhosts;
+	PacmanPtr mPacman;
+};
+
 class GameController : public IController
 {
 public:
@@ -24,28 +31,24 @@ public:
 
 	void KeyDown(Direction direction) override;
 	void UpdateGameState(GameState gameState) override;
+	void UpdateScore(int score) { mCurtainController->UpdateScore(score); }
 
 private:
-	
-	void CreateGameWorld();
-	void SetupMapBoundaries();
-	void SetupControllers();
-	
+	GameWorld CreateGameWorld();
+	void SetupControllers(GameWorld& gameWorld);
+	Boundaries GetBoundaries(const Grid& grid);
 	void ReleaseGhosts();
+	bool IsGameOver();
 
 private:
 	const Config& mConfig;
-	GridPtr mGrid;
-	PacmanPtr mPacman;
-	Boundaries mBoundaries;
-	int mScore{ 0 };
+	GameWorld mGameWorld;
 	GameState mGameState{ NOT_STARTED };
-	Controllers mObjectControllers;
-	GameCurtainController* mCurtainController = nullptr;
+	PacmanControllerPtr mPacmanController;
+	GhostControllers mGhostControllers;
+	GameCurtainPtr mCurtainController;
 	double mTimeSinceLastUpdate = 0.0;
-	std::chrono::duration<double> mTimeSinceGameActive{ 0.0 };
-	std::vector<GhostPtr> mGhosts;
+	DurationSeconds mTimeSinceGameActive{ 0.0 };
 	bool mGhostsReleased{ false };
-
 };
 		

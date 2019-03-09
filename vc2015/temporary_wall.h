@@ -9,10 +9,9 @@ public:
 	TemporaryWall(Point center, Point gridPosition, const Config& config)
 		:
 		mCenter(center),
-		mGirdPosition(gridPosition),
+		mGridPosition(gridPosition),
 		mConfig(config),
-		mFieldSize(config.FIELD_SIZE),
-		mOffset(config.FIELD_OFFSET)
+		mFieldSize(config.FIELD_SIZE)
 	{
 	}
 
@@ -20,7 +19,7 @@ public:
 	bool IsVisitable() const override { return mIsVisitable; }
 	void SetIsVisitable(bool visitable) override { mIsVisitable = visitable; }
 	const Point& GetCenter() const override { return mCenter; }
-	const Point& GetGridPosition() const override { return mGirdPosition; }
+	const Point& GetGridPosition() const override { return mGridPosition; }
 	void SetCenter(const Point& center) override {}
 	void SetGridPosition(const Point& position) override {}
 	void UnsetPoints() override {}
@@ -29,10 +28,9 @@ public:
 
 private:
 	Point mCenter;
-	Point mGirdPosition;
+	Point mGridPosition;
 	const Config& mConfig;
 	const int mFieldSize;
-	const int mOffset;
 	bool mIsVisitable{ false };
 };
 

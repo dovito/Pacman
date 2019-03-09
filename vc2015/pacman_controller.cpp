@@ -12,7 +12,7 @@ void PacmanController::Update(double elapsedTime)
 {	
 	auto updateNow = std::chrono::duration<double>(elapsedTime);
 	auto timeDelta = updateNow - mLastUpdate;
-	mUpdateInterval += std::chrono::duration_cast<std::chrono::milliseconds>(timeDelta);
+	mUpdateInterval += std::chrono::duration_cast<Milliseconds>(timeDelta);
 	mPacman->UpdateMouth(timeDelta.count());
 
 	if (mGameState == ACTIVE && mUpdateInterval >= mConfig.PACMAN_UPDATE_INTERVAL)
@@ -103,7 +103,7 @@ GameField* PacmanController::GetNextField(Direction direction)
 	{
 		if (pacmanGridPosition.mColumn <= 0)
 		{
-			return mGrid->at(pacmanGridPosition.mRow).at(mBoundaries.mGrid.mColumn - 1).get();;
+			return mGrid->at(pacmanGridPosition.mRow).at(mBoundaries.mGrid.mColumn - 1).get();
 		}
 		else
 		{
@@ -151,8 +151,10 @@ bool PacmanController::PacmanIsInNextField(GameField* nextField)
 	if (mPacman->GetGridPosition() != nextField->GetGridPosition())
 	{
 		auto pacmanPixelPosition = mPacman->GetCenter();
-		if (pacmanPixelPosition.mRow < mBoundaries.mMapPixelsMin.mRow || mBoundaries.mMapPixelsMax.mRow < pacmanPixelPosition.mRow ||
-			pacmanPixelPosition.mColumn < mBoundaries.mMapPixelsMin.mColumn || mBoundaries.mMapPixelsMax.mColumn < pacmanPixelPosition.mColumn)
+		if (pacmanPixelPosition.mRow < mBoundaries.mMapPixelsMin.mRow ||
+			mBoundaries.mMapPixelsMax.mRow < pacmanPixelPosition.mRow ||
+			pacmanPixelPosition.mColumn < mBoundaries.mMapPixelsMin.mColumn ||
+			mBoundaries.mMapPixelsMax.mColumn < pacmanPixelPosition.mColumn)
 		{
 			return true;
 		}

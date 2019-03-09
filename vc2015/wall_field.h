@@ -10,10 +10,9 @@ public:
 	Wall(Point center, Point gridPosition, const Config& config)
 		:
 		mCenter(center),
-		mGirdPosition(gridPosition),
+		mGridPosition(gridPosition),
 		mConfig(config),
-		mFieldSize(config.FIELD_SIZE),
-		mOffset(config.FIELD_OFFSET)
+		mFieldSize(config.FIELD_SIZE)
 	{
 	}
 	
@@ -21,7 +20,7 @@ public:
 	bool IsVisitable() const override{ return false; }
 	void SetIsVisitable(bool visitable) override {}
 	const Point& GetCenter() const override { return mCenter; }
-	const Point& GetGridPosition() const override { return mGirdPosition; }
+	const Point& GetGridPosition() const override { return mGridPosition; }
 	void SetCenter(const Point& center) override {};
 	void SetGridPosition(const Point& position) override {};
 	void UnsetPoints() override {}
@@ -30,8 +29,7 @@ public:
 
 private:
 	Point mCenter;
-	Point mGirdPosition;
+	Point mGridPosition;
 	const Config& mConfig;
 	const int mFieldSize;
-	const int mOffset;
 };

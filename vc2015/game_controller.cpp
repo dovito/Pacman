@@ -3,53 +3,65 @@
 #include <boost/algorithm/string.hpp>
 #include <cinder/Text.h>
 #include <fstream>
+#include <algorithm>
 
 void GameController::Setup()
 {
-	CreateGameWorld();
-	SetupMapBoundaries();
-	SetupControllers();
+	mGameWorld = CreateGameWorld();
+	SetupControllers(mGameWorld);
 }
 
 void GameController::Update(double elapsedTime)
 {
-	for (auto& objectController : mObjectControllers)
-	{
-		objectController->Update(elapsedTime);
-	}
-	
 	double timeDelta = elapsedTime - mTimeSinceLastUpdate;
 	mTimeSinceLastUpdate = elapsedTime;
+
+	mCurtainController->Update(elapsedTime);
+
 	if (mGameState == ACTIVE)
 	{
+		for (auto& ghostController : mGhostControllers)
+		{
+			ghostController->Update(elapsedTime);
+		}
+
+		mPacmanController->Update(elapsedTime);
+
 		mTimeSinceGameActive += std::chrono::duration<double>(timeDelta);
 		if (!mGhostsReleased && mTimeSinceGameActive > mConfig.RELEASE_GHOSTS)
 		{
 			ReleaseGhosts();
 		}
+		if (IsGameOver())
+		{
+			UpdateGameState(OVER);
+		}
 	}
-	
 }
 
 void GameController::Draw()
 {
-	for (auto& objectController : mObjectControllers)
+	if (mGameState == ACTIVE)
 	{
-		objectController->Draw();
+		for (auto& ghostController : mGhostControllers)
+		{
+			ghostController->Draw();
+		}
+		mPacmanController->Draw();
 	}
+	mCurtainController->Draw();
 }
 
 void GameController::KeyDown(Direction direction)
 {
-	for (auto& objectController : mObjectControllers)
-	{
-		objectController->KeyDown(direction);
-	}
+	mPacmanController->KeyDown(direction);
 }
 
-void GameController::CreateGameWorld()
+GameWorld GameController::CreateGameWorld()
 {
+	GameWorld gameWorld;
 	Grid grid;
+
 	int fieldRow = mConfig.MAP_START_ROW;
 	std::ifstream inFile(mConfig.MAP_FILE_NAME);
 	
@@ -84,11 +96,11 @@ void GameController::CreateGameWorld()
 					break;
 				case PACMAN:
 					gameFields.push_back(std::make_unique<EmptyField>(center, gridPosition, mConfig));
-					mPacman = std::make_unique<Pacman>(center, gridPosition, mConfig);
+					gameWorld.mPacman = std::make_unique<Pacman>(center, gridPosition, mConfig);
 					break;
 				case GHOST:
 					gameFields.push_back(std::make_unique<EmptyField>(center, gridPosition, mConfig));
-					mGhosts.push_back(std::make_unique<Ghost>(center, gridPosition, mConfig));
+					gameWorld.mGhosts.push_back(std::make_unique<Ghost>(center, gridPosition, mConfig));
 					break;
 				default: // EMPTY
 					gameFields.push_back(std::make_unique<EmptyField>(center, gridPosition, mConfig));
@@ -100,56 +112,64 @@ void GameController::CreateGameWorld()
 		grid.push_back(std::move(gameFields));
 		fieldRow += mConfig.FIELD_SIZE + mConfig.FIELD_OFFSET;
 	}
-	mGrid = std::make_shared<Grid>(std::move(grid));
+	
+	gameWorld.mGameMap.mBoundaries = GetBoundaries(grid);
+	gameWorld.mGameMap.mGrid = std::make_shared<Grid>(std::move(grid));
+	return gameWorld;
 }
 
-void GameController::SetupMapBoundaries()
+Boundaries GameController::GetBoundaries(const Grid& grid)
 {
-	int maxRows = mGrid->size();
-	int maxCols = mGrid->at(0).size();
-	mBoundaries.mGrid = Point(maxRows, maxCols);
+	Boundaries boundaries;
+	int maxRows = grid.size();
+	int maxCols = grid.at(0).size();
+	boundaries.mGrid = Point(maxRows, maxCols);
 
 	int mapRowOffset = static_cast<int>(mConfig.MAP_START_ROW - mConfig.FIELD_SIZE / 2);
 	int mapColOffset = static_cast<int>(mConfig.MAP_START_COLUMN - mConfig.FIELD_SIZE / 2);
 	int maxPixelRows = (maxRows * mConfig.FIELD_SIZE) + ((maxRows - 1) * mConfig.FIELD_OFFSET) + mapRowOffset;
 	int maxPixelCols = (maxCols * mConfig.FIELD_SIZE) + ((maxCols - 1) * mConfig.FIELD_OFFSET) + mapColOffset;
 	
-	mBoundaries.mMapPixelsMax = Point(maxPixelRows, maxPixelCols);
-	mBoundaries.mMapPixelsMin = Point(mapRowOffset, mapColOffset);
+	boundaries.mMapPixelsMax = Point(maxPixelRows, maxPixelCols);
+	boundaries.mMapPixelsMin = Point(mapRowOffset, mapColOffset);
+
+	return boundaries;
 }
 
-void GameController::SetupControllers()
+void GameController::SetupControllers(GameWorld& gameWorld)
 {
-	auto pacmanController = std::make_unique<PacmanController>(mConfig, mGrid, mPacman, mBoundaries);
-	auto curtainController = std::make_unique<GameCurtainController>(mConfig, mGrid, mBoundaries);
-	mCurtainController = curtainController.get();
-	pacmanController->SetScoreUpdateCallback([this](int score)
-	{
-		mCurtainController->UpdateScore(score);
+	mCurtainController = std::make_unique<GameCurtainController>(mConfig, gameWorld.mGameMap);
 	
+	mPacmanController = std::make_unique<PacmanController>(mConfig, gameWorld.mPacman, gameWorld.mGameMap);
+	mPacmanController->SetScoreUpdateCallback([this](int score)
+	{
+		UpdateScore(score);
 	});
 
-	mObjectControllers.push_back(std::move(pacmanController));
-	mObjectControllers.push_back(std::move(curtainController));
-	
-	for (auto& ghost : mGhosts)
+	for (auto& ghost : gameWorld.mGhosts)
 	{
-		mObjectControllers.push_back(std::make_unique<GhostController>(mConfig, mGrid, ghost, mBoundaries));
+		mGhostControllers.push_back(std::make_unique<GhostController>(mConfig, ghost, gameWorld.mGameMap));
 	}
 }
 
 void GameController::UpdateGameState(GameState gameState)
 {
-	for (auto& objectController : mObjectControllers)
+	if (mGameState != OVER)
 	{
-		objectController->UpdateGameState(gameState);
+		for (auto& ghostController : mGhostControllers)
+		{
+			ghostController->UpdateGameState(gameState);
+		}
+
+		mPacmanController->UpdateGameState(gameState);
+		mCurtainController->UpdateGameState(gameState);
+		mGameState = gameState;
 	}
-	mGameState = gameState;
 }
 
 void GameController::ReleaseGhosts()
 {
-	for (auto& row : *mGrid)
+	for (auto& row : *(mGameWorld.mGameMap.mGrid))
 	{
 		for (auto& field : row)
 		{
@@ -157,4 +177,13 @@ void GameController::ReleaseGhosts()
 		}
 	}
 	mGhostsReleased = true;
+}
+
+bool GameController::IsGameOver()
+{
+	const auto pacmanGridPosition = mPacmanController->GetObjectPosition();
+	return std::any_of(mGhostControllers.begin(), mGhostControllers.end(), [&](const GhostControllerPtr& ghostController)
+	{
+		return !(pacmanGridPosition != ghostController->GetObjectPosition());
+	});
 }

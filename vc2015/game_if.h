@@ -12,6 +12,18 @@ enum GameState
 	OVER
 };
 
+inline const char* GameStateToStr(GameState state) // for debugging
+{
+	switch (state)
+	{
+	case NOT_STARTED:   return "NOT_STARTED";
+	case ACTIVE:   return "ACTIVE";
+	case PAUSED:  return "PAUSED";
+	case OVER:     return "OVER";
+	default:     return "UNKNOWN";
+	}
+}
+
 enum Direction
 {
 	LEFT,
@@ -21,7 +33,7 @@ enum Direction
 	NONE
 };
 
-inline const char* ToString(Direction dir) // for debugging
+inline const char* DirectionToString(Direction dir) // for debugging
 {
 	switch (dir)
 	{
@@ -117,3 +129,12 @@ struct Boundaries
 	Point mMapPixelsMax{ 0, 0 };
 	Point mMapPixelsMin{ 0, 0 };
 };
+
+struct GameMap
+{
+	GridPtr mGrid;
+	Boundaries mBoundaries;
+};
+
+typedef std::chrono::duration<double> DurationSeconds;
+typedef std::chrono::milliseconds Milliseconds;

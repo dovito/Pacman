@@ -23,8 +23,7 @@ void Ghost::MakeStep()
 
 void Ghost::Draw()
 {
-	auto body = std::move(GetBody());
-	DrawBody(body);
+	DrawBody(GetBody());
 }
 
 std::vector<ci::vec2> Ghost::GetSkeleton()
@@ -32,7 +31,7 @@ std::vector<ci::vec2> Ghost::GetSkeleton()
 	std::vector<ci::vec2> skeleton;
 
 	auto ghostSize = mConfig.FIELD_SIZE;
-	const float STEP = 0.2;
+	const float STEP = 0.1f;
 
 	for (float i = M_PI; i < (2.0f * M_PI + STEP); i += STEP)
 	{

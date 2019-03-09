@@ -13,8 +13,9 @@ void GhostController::Update(double elapsedTime)
 {
 	auto updateNow = std::chrono::duration<double>(elapsedTime);
 	auto timeDelta = updateNow - mLastUpdate;
-	mUpdateInterval += std::chrono::duration_cast<std::chrono::milliseconds>(timeDelta);
+	mUpdateInterval += std::chrono::duration_cast<Milliseconds>(timeDelta);
 	mLastUpdate = updateNow;
+
 	if (mGameState == ACTIVE && mUpdateInterval >= mConfig.PACMAN_UPDATE_INTERVAL)
 	{
 		mUpdateInterval = 0ms;
@@ -140,8 +141,10 @@ bool GhostController::GhostIsInNextField(GameField* nextField)
 	if (mGhost->GetGridPosition() != nextField->GetGridPosition())
 	{
 		auto pacmanPixelPosition = mGhost->GetCenter();
-		if (pacmanPixelPosition.mRow < mBoundaries.mMapPixelsMin.mRow || mBoundaries.mMapPixelsMax.mRow < pacmanPixelPosition.mRow ||
-			pacmanPixelPosition.mColumn < mBoundaries.mMapPixelsMin.mColumn || mBoundaries.mMapPixelsMax.mColumn < pacmanPixelPosition.mColumn)
+		if (pacmanPixelPosition.mRow < mBoundaries.mMapPixelsMin.mRow || 
+			mBoundaries.mMapPixelsMax.mRow < pacmanPixelPosition.mRow ||
+			pacmanPixelPosition.mColumn < mBoundaries.mMapPixelsMin.mColumn ||
+			mBoundaries.mMapPixelsMax.mColumn < pacmanPixelPosition.mColumn)
 		{
 			return true;
 		}

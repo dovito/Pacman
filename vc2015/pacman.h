@@ -52,5 +52,4 @@ private:
 	int mStepSize;
 	int mRadius;
 };
-
 typedef std::unique_ptr<Pacman> PacmanPtr;

@@ -6,12 +6,12 @@
 class PacmanController : public IController
 {
 public:
-	PacmanController(const Config& config, GridPtr grid, PacmanPtr& pacman, Boundaries& boundaries)
+	PacmanController(const Config& config, PacmanPtr& pacman, GameMap& gameMap)
 		:
 		mConfig(config),
-		mGrid(grid),
 		mPacman(std::move(pacman)),
-		mBoundaries(boundaries)
+		mGrid(gameMap.mGrid),
+		mBoundaries(gameMap.mBoundaries)
 	{
 	}
 
@@ -22,6 +22,7 @@ public:
 	void KeyDown(Direction direction) override;
 	void UpdateGameState(GameState gameState) override { mGameState = gameState; }
 
+	const Point& GetObjectPosition() const { return mPacman->GetGridPosition(); }
 	void SetScoreUpdateCallback(std::function<void(int)> callBack) { mUpdateScore = callBack; }
 
 private:
@@ -31,13 +32,13 @@ private:
 	bool PacmanIsInNextField(GameField* nextField);
 
 private:
-	GridPtr mGrid;
-	PacmanPtr mPacman;
-	IController* mScoreController;
 	const Config& mConfig;
+	PacmanPtr mPacman;
+	GridPtr mGrid;
+	Boundaries mBoundaries;
 	GameState mGameState{ NOT_STARTED };
-	std::chrono::milliseconds mUpdateInterval{ 0ms };
-	std::chrono::duration<double> mLastUpdate{ 0.0 };
-	Boundaries& mBoundaries;
+	Milliseconds mUpdateInterval{ 0ms };
+	DurationSeconds mLastUpdate{ 0.0 };
 	std::function<void(int score)> mUpdateScore;
 };
+typedef std::unique_ptr<PacmanController> PacmanControllerPtr;

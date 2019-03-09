@@ -12,7 +12,7 @@ public:
 		mMapPosition(mapPosition),
 		mConfig(config),
 		mStepSize(mConfig.GHOST_STEP_IN_PX),
-		mGhostSkelton(std::move(GetSkeleton()))
+		mGhostSkelton(GetSkeleton())
 	{
 	}
 

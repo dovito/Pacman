@@ -16,10 +16,9 @@ struct Config
 	const int FIELD_SIZE = 12;
 	const int FIELD_OFFSET = 2;
 
-	const int BASIC_FIELD_RADIUS = 1;
-	const int COIN_FIELD_RADIUS = 3;
+	const float BASIC_FIELD_RADIUS = 1.0f;
+	const float COIN_FIELD_RADIUS = 3.0f;
 	const int PACMAN_RADIUS = 6;
-	//const int PACMAN_MOUTH_SPEED = 3;
 
 	const std::chrono::milliseconds CURTAIN_UPDATE_INTERVAL{ 200ms };
 

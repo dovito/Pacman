@@ -8,12 +8,12 @@ typedef std::unique_ptr<Ghost> GhostPtr;
 class GhostController : public IController
 {
 public:
-	GhostController(const Config& config, GridPtr grid, GhostPtr& ghost, Boundaries& boundaries)
+	GhostController(const Config& config, GhostPtr& ghost, GameMap& gameMap)
 		:
 		mConfig(config),
-		mGrid(grid),
 		mGhost(std::move(ghost)),
-		mBoundaries(boundaries)
+		mGrid(gameMap.mGrid),
+		mBoundaries(gameMap.mBoundaries)
 	{
 	}
 
@@ -24,6 +24,8 @@ public:
 	void KeyDown(Direction direction) override {};
 	void UpdateGameState(GameState gameState) override { mGameState = gameState;  }
 
+	const Point& GetObjectPosition() const { return mGhost->GetGridPosition();  }
+
 private:
 	bool GhostAllowedToEnterNextField(Direction direction, GameField* nextField);
 	bool GhostCanMoveInItsOwnField();
@@ -32,11 +34,14 @@ private:
 	Direction GetRandomDirection();
 
 private:
-	GridPtr mGrid;
-	GhostPtr mGhost;
+	
 	const Config& mConfig;
+	GhostPtr mGhost;
+	GridPtr mGrid;
+	Boundaries mBoundaries;
 	GameState mGameState{ NOT_STARTED };
-	std::chrono::milliseconds mUpdateInterval{ 0ms };
-	std::chrono::duration<double> mLastUpdate{ 0.0 };
-	Boundaries& mBoundaries;
+	Milliseconds mUpdateInterval{ 0ms };
+	DurationSeconds mLastUpdate{ 0.0 };
 };
+typedef std::unique_ptr<GhostController> GhostControllerPtr;
+typedef std::vector<GhostControllerPtr> GhostControllers;
