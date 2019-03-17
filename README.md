@@ -1,21 +1,24 @@
 # Setup
 ## Linux
-
+```
+mkdir build
+cd build
+cmake -DCINDER_PATH=path_to_cinder ..
+make
+```
+## To setup Cinder:
 ### Install CMake
 ```
 sudo apt-get install cmake
 ```
-
 ### Install Clang
 ```
 sudo apt-get install clang
 ```
-
 To set Clang as the default compiler, select /usr/bin/clang++ when prompted by this command: 
 ```
 sudo update-alternatives --config c++
 ```
-
 ### Cinder dependencies
 ```
 sudo apt-get install libxcursor-dev \
