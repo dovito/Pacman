@@ -23,7 +23,7 @@ public:
 	void SetCenter(const Point& center) override {};
 	void SetGridPosition(const Point& position) override {};
 	void UnsetPoints() override {}
-	const int GetPoints() const { return 0;  }
+	const int GetPoints() const override { return 0;  }
 	void Draw() override;
 
 private:
