@@ -1,6 +1,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
-#include "cinder/Log.h"
+//#include "cinder/Log.h"
 #include "cinder/gl/gl.h"
 
 #include "game_controller.h"
@@ -10,7 +10,7 @@ using namespace ci::app;
 
 auto prepareSettings = [](App::Settings* settings)
 {
-	log::makeLogger<log::LoggerFile>("pacman_app.log");
+	//log::makeLogger<log::LoggerFile>("pacman_app.log");
 	settings->setWindowSize(Config::WINDOW_SIZE_X, Config::WINDOW_SIZE_Y);
 
 #if defined( CINDER_COCOA_TOUCH )

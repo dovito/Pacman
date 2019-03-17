@@ -1,7 +1,7 @@
 #pragma once
 
-#include "game_if.h"
 #include "config.h"
+#include "types.h"
 
 class Ghost : public IGameObject
 {
@@ -37,7 +37,6 @@ private:
 	const Config& mConfig;
 	Direction mDirection{ Direction::LEFT };
 	int mStepSize;
-	bool mAllowedToMove{ false };
 	std::vector<ci::vec2> mGhostSkelton;
 };
 

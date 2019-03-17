@@ -1,7 +1,7 @@
 #pragma once
 
-#include "game_if.h"
 #include "config.h"
+#include "types.h"
 #include "pacman.h"
 
 class GameCurtainController : public IController

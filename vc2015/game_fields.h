@@ -5,4 +5,3 @@
 #include "temporary_wall.h"
 #include "basic_field.h"
 #include "coin_field.h"
-#include "pacman.h"

@@ -1,8 +1,12 @@
 #pragma once
 
 #include "config.h"
-#include "game_if.h"
-#include "game_fields.h"
+#include "types.h"
+#include "empty_field.h"
+#include "wall_field.h"
+#include "temporary_wall.h"
+#include "basic_field.h"
+#include "coin_field.h"
 #include "pacman_controller.h"
 #include "ghost_controller.h"
 #include "game_curtain_controller.h"
@@ -51,4 +55,5 @@ private:
 	DurationSeconds mTimeSinceGameActive{ 0.0 };
 	bool mGhostsReleased{ false };
 };
+typedef std::unique_ptr<GameController> GameControllerPtr;
 		

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "game_if.h"
+#include "types.h"
 #include "config.h"
-#include <cinder/Log.h>
 
 class BasicField : public GameField
 {

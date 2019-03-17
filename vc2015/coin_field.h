@@ -1,8 +1,8 @@
 #pragma once
 
-#include "game_if.h"
+#include "types.h"
 #include "config.h"
-#include <cinder/Log.h>
+
 
 class Coin : public GameField
 {
@@ -25,7 +25,6 @@ public:
 	void SetGridPosition(const Point& position) override {};
 	void UnsetPoints() override { mPoints = 0; }
 	const int GetPoints() const override { return mPoints; }
-	
 	void Draw() override;
 
 private:

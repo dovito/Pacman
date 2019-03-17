@@ -1,6 +1,6 @@
 #pragma once
 
-#include "game_if.h"
+#include "types.h"
 #include "pacman.h"
 
 class PacmanController : public IController

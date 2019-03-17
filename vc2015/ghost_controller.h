@@ -1,6 +1,6 @@
 #pragma once
 
-#include "game_if.h"
+#include "types.h"
 #include "ghost.h"
 
 typedef std::unique_ptr<Ghost> GhostPtr;
