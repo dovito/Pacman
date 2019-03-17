@@ -33,7 +33,7 @@ struct Config
 	const int MAP_START_ROW = 20;
 	const int MAP_START_COLUMN = 20;
 
-	const std::string MAP_FILE_NAME = "C:\\Users\\Dovile\\Desktop\\pman\\Pacman\\map.txt";
+	const std::string MAP_FILE_NAME = "map.txt";
 
 	ci::Color YELLOW{ 1.0, 1.0, 0.0 };
 	ci::Color BLUE{ 0.0, 0.0, 1.0 };

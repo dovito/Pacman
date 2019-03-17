@@ -16,6 +16,7 @@ endif()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${cxx_compile_options}")
 
 file(GLOB pacman
+	"basic_field.cpp"
 	"coin_field.cpp"
 	"game_controller.cpp"
 	"game_curtain_controller.cpp"
@@ -23,7 +24,7 @@ file(GLOB pacman
 	"ghost.cpp"
 	"pacman_controller.cpp"
 	"pacman.cpp"
-	"temprary_wall.cpp"
+	"temporary_wall.cpp"
 	"wall_field.cpp"
 	"pacman_app.cpp")
 
