@@ -2,7 +2,7 @@
 
 void BasicField::Draw()
 {
-	if (mPoints > 0)
+	if (mPoints)
 	{
 		ci::gl::color(mConfig.YELLOW);
 
@@ -10,4 +10,9 @@ void BasicField::Draw()
 			ci::vec2(mCenter.mColumn, mCenter.mRow),
 			mConfig.BASIC_FIELD_RADIUS);
 	}
+}
+
+void BasicField::Reset()
+{
+	mPoints = mConfig.BASIC_POINTS;
 }

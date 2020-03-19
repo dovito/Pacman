@@ -26,6 +26,12 @@ void Ghost::Draw()
 	DrawBody(GetBody());
 }
 
+void Ghost::Reset()
+{
+	mCenter = mInitialCenter;
+	mMapPosition = mInitialMapPosition;
+}
+
 std::vector<ci::vec2> Ghost::GetSkeleton()
 {
 	std::vector<ci::vec2> skeleton;

@@ -6,7 +6,7 @@
 class TemporaryWall : public GameField
 {
 public:
-	TemporaryWall(Point center, Point gridPosition, const Config& config)
+	TemporaryWall(const Point center, const Point gridPosition, const Config& config)
 		:
 		mCenter(center),
 		mGridPosition(gridPosition),
@@ -23,8 +23,9 @@ public:
 	void SetCenter(const Point& center) override {}
 	void SetGridPosition(const Point& position) override {}
 	void UnsetPoints() override {}
-	const int GetPoints() const override { return 0; }
+	const int GetPoints() const { return 0; }
 	void Draw() override;
+	void Reset() override { mIsVisitable = false; }
 
 private:
 	Point mCenter;

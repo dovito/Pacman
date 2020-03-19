@@ -11,3 +11,8 @@ void Coin::Draw()
 			mConfig.COIN_FIELD_RADIUS);
 	}
 }
+
+void Coin::Reset()
+{
+	mPoints = mConfig.COIN_POINTS;
+}

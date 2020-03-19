@@ -18,10 +18,11 @@ public:
 	}
 
 	// IController
-	void Setup() override {};
+	void Setup() override {}
 	void Update(double delta) override;
 	void Draw() override;
-	void KeyDown(Direction direction) override {};
+	void Reset() override;
+	void KeyDown(Direction direction) override {}
 	void UpdateGameState(GameState gameState) override { mGameState = gameState;  }
 
 	const Point& GetObjectPosition() const { return mGhost->GetGridPosition();  }

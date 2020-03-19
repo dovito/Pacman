@@ -7,14 +7,13 @@
 class GameCurtainController : public IController
 {
 public:
-	GameCurtainController(const Config& config, GameMap& gameMap)
-		:
-		mConfig(config),
-		mGrid(gameMap.mGrid),
-		mBoundaries(gameMap.mBoundaries),
-		mScreenCenter(Config::WINDOW_SIZE_Y / 2, Config::WINDOW_SIZE_X / 2)
+	GameCurtainController(const Config& config, const GameMap& gameMap)
+		: mConfig(config)
+		, mGrid(gameMap.mGrid)
+		, mBoundaries(gameMap.mBoundaries)
+		, mScreenCenter(Config::WINDOW_SIZE_Y / 2, Config::WINDOW_SIZE_X / 2)
 	{
-		Point pacmanCenter = Point(mScreenCenter.mRow - 50, mScreenCenter.mColumn);
+		const Point pacmanCenter = Point(mScreenCenter.mRow - 50, mScreenCenter.mColumn);
 		mPacman = std::make_unique<Pacman>(pacmanCenter, Point(0, 0), mConfig);
 		mPacman->SetRadius(30.0f);
 	}
@@ -23,6 +22,7 @@ public:
 	void Setup() override {}
 	void Update(double elapsedTime) override;
 	void Draw() override;
+	void Reset() override;
 	void KeyDown(Direction direction) override {}
 	void UpdateGameState(GameState gameState) override;
 
@@ -30,12 +30,12 @@ public:
 
 private:
 	void DrawGameInitialCurtain();
-	void DrawGameActiveCurtain();
+	void DrawGameBackgroundCurtain();
 	void DrawGamePausedCurtain();
 	void DrawGameOverCurtain();
 	void DrawHelpBoard();
 	void DrawScore();
-
+	
 
 private:
 	const Config& mConfig;
@@ -43,7 +43,7 @@ private:
 	Boundaries mBoundaries;
 	PacmanPtr mPacman;
 	Point mScreenCenter;
-	GameState mGameState{ NOT_STARTED };
+	GameState mCurrentGameState{ NOT_STARTED };
 	int mScore{ 0 };
 	Milliseconds mUpdateInterval{ 0ms };
 	DurationSeconds mLastUpdate{ 0.0 };

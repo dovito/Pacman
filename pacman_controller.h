@@ -19,6 +19,7 @@ public:
 	void Setup() override {};
 	void Update(double delta) override;
 	void Draw() override;
+	void Reset() override;
 	void KeyDown(Direction direction) override;
 	void UpdateGameState(GameState gameState) override { mGameState = gameState; }
 

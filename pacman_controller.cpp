@@ -1,4 +1,6 @@
 #include "pacman_controller.h"
+#include "cinder/Log.h"
+
 
 void PacmanController::Draw()
 {
@@ -8,13 +10,19 @@ void PacmanController::Draw()
 	}
 }
 
+void PacmanController::Reset()
+{
+	mPacman->Reset();
+	mGameState = NOT_STARTED;
+}
+
 void PacmanController::Update(double elapsedTime)
 {	
 	auto updateNow = std::chrono::duration<double>(elapsedTime);
 	auto timeDelta = updateNow - mLastUpdate;
 	mUpdateInterval += std::chrono::duration_cast<Milliseconds>(timeDelta);
 	mPacman->UpdateMouth(timeDelta.count());
-
+	
 	if (mGameState == ACTIVE && mUpdateInterval >= mConfig.PACMAN_UPDATE_INTERVAL)
 	{
 		Direction direction = mPacman->GetDirection();
@@ -97,53 +105,41 @@ bool PacmanController::PacmanCanMoveInItsOwnField()
 
 GameField* PacmanController::GetNextField(Direction direction)
 {
-	auto pacmanGridPosition = mPacman->GetGridPosition();
+	const auto pacmanGridPosition = mPacman->GetGridPosition();
 
-	if (direction == LEFT)
+	switch (direction)
+	{
+	case LEFT:
 	{
 		if (pacmanGridPosition.mColumn <= 0)
-		{
 			return mGrid->at(pacmanGridPosition.mRow).at(mBoundaries.mGrid.mColumn - 1).get();
-		}
-		else
-		{
-			return mGrid->at(pacmanGridPosition.mRow).at(pacmanGridPosition.mColumn - 1).get();
-		}
+
+		return mGrid->at(pacmanGridPosition.mRow).at(pacmanGridPosition.mColumn - 1).get();
 	}
-	else if (direction == RIGHT)
+	case RIGHT:
 	{
 		if (pacmanGridPosition.mColumn >= mBoundaries.mGrid.mColumn - 1)
-		{
 			return mGrid->at(pacmanGridPosition.mRow).at(0).get();;
-		}
-		else
-		{
-			return mGrid->at(pacmanGridPosition.mRow).at(pacmanGridPosition.mColumn + 1).get();
-		}
+
+		return mGrid->at(pacmanGridPosition.mRow).at(pacmanGridPosition.mColumn + 1).get();
 	}
-	else if (direction == UP)
+	case UP:
 	{
 		if (pacmanGridPosition.mRow <= 0)
-		{
 			return mGrid->at(mBoundaries.mGrid.mRow - 1).at(pacmanGridPosition.mColumn).get();
-		}
-		else
-		{
-			return mGrid->at(pacmanGridPosition.mRow - 1).at(pacmanGridPosition.mColumn).get();
-		}
+
+		return mGrid->at(pacmanGridPosition.mRow - 1).at(pacmanGridPosition.mColumn).get();
 	}
-	else if (direction == DOWN)
+	case DOWN:
 	{
 		if (pacmanGridPosition.mRow >= mBoundaries.mGrid.mRow - 1)
-		{
 			return mGrid->at(0).at(pacmanGridPosition.mColumn).get();
-		}
-		else
-		{
-			return mGrid->at(pacmanGridPosition.mRow + 1).at(pacmanGridPosition.mColumn).get();
-		}
+
+		return mGrid->at(pacmanGridPosition.mRow + 1).at(pacmanGridPosition.mColumn).get();
 	}
-	return nullptr;
+	default:
+		return nullptr;
+	}
 }
 
 bool PacmanController::PacmanIsInNextField(GameField* nextField)

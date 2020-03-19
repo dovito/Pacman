@@ -6,10 +6,12 @@
 class Ghost : public IGameObject
 {
 public:
-	Ghost(Point center, Point mapPosition, const Config& config)
+	Ghost(const Point center, const Point mapPosition, const Config& config)
 		:
 		mCenter(center),
+		mInitialCenter(center),
 		mMapPosition(mapPosition),
+		mInitialMapPosition(mapPosition),
 		mConfig(config),
 		mStepSize(mConfig.GHOST_STEP_IN_PX),
 		mGhostSkelton(GetSkeleton())
@@ -25,6 +27,7 @@ public:
 	void SetGridPosition(const Point& position) override { mMapPosition = position; }
 	void MakeStep() override;
 	void Draw() override;
+	void Reset() override;
 
 private:
 	std::vector<ci::vec2> GetSkeleton();
@@ -33,7 +36,9 @@ private:
 
 private:
 	Point mCenter;
+	const Point mInitialCenter;
 	Point mMapPosition;
+	const Point mInitialMapPosition;
 	const Config& mConfig;
 	Direction mDirection{ Direction::LEFT };
 	int mStepSize;

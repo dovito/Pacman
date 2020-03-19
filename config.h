@@ -1,19 +1,16 @@
 #pragma once
 
 #include <cinder/Color.h>
-#include <boost/assign/list_of.hpp>
-#include <boost/unordered_map.hpp>
 #include <chrono>
 
-using boost::assign::map_list_of;
 using namespace std::chrono_literals;
 
 struct Config
 {
-	static const int WINDOW_SIZE_X = 500;
-	static const int WINDOW_SIZE_Y = 350;
+	static const int WINDOW_SIZE_X = 550;
+	static const int WINDOW_SIZE_Y = 400;
 
-	const int FIELD_SIZE = 12;
+	const int FIELD_SIZE = 14;
 	const int FIELD_OFFSET = 2;
 
 	const float BASIC_FIELD_RADIUS = 1.0f;
@@ -22,10 +19,10 @@ struct Config
 
 	const std::chrono::milliseconds CURTAIN_UPDATE_INTERVAL{ 200ms };
 
-	const std::chrono::milliseconds PACMAN_UPDATE_INTERVAL{ 50ms };
+	const std::chrono::milliseconds PACMAN_UPDATE_INTERVAL{ 80ms };
 	const int PACMAN_STEP_IN_PX = 4; // per update interval
 
-	const std::chrono::milliseconds GHOST_UPDATE_INTERVAL{ 50ms };
+	const std::chrono::milliseconds GHOST_UPDATE_INTERVAL{ 80ms };
 	const int GHOST_STEP_IN_PX = 4; // per update interval
 	const int GHOST_STEP_IN_PX_SLOW = 2; // per update interval
 	const std::chrono::seconds RELEASE_GHOSTS{ 5s }; // after 5 seconds of game start
@@ -58,11 +55,11 @@ enum FIELD
 	GHOST
 };
 
-const boost::unordered_map<const std::string, FIELD> stringToField = map_list_of
-("W", WALL)
-("T", TMP_WALL) // temporary wall field that guards ghosts
-("-", BASIC)
-("C", COIN)
-(" ", EMPTY)
-("P", PACMAN)
-("G", GHOST);
+const std::unordered_map<std::string, FIELD> stringToField{
+	{"W", WALL},
+	{"T", TMP_WALL}, /* temporary wall field that guards ghosts*/
+	{"-", BASIC},
+	{"C", COIN},
+	{" ", EMPTY},
+	{"P", PACMAN},
+	{"G", GHOST} };

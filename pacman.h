@@ -7,10 +7,12 @@
 class Pacman : public IGameObject
 {
 public:
-	Pacman(Point center, Point mapPosition, const Config& config)
+	Pacman(const Point center, const Point mapPosition, const Config& config)
 		:
 		mCenter(center),
+		mInitialCenter(center),
 		mMapPosition(mapPosition),
+		mInitialMapPosition(mapPosition),
 		mConfig(config),
 		mStepSize(mConfig.PACMAN_STEP_IN_PX),
 		mRadius(mConfig.PACMAN_RADIUS)
@@ -26,6 +28,7 @@ public:
 	void SetGridPosition(const Point& position) override { mMapPosition = position; }
 	void MakeStep() override;
 	void Draw() override;
+	void Reset() override;
 	
 	void UpdateMouth(const double delta);
 	void SetRadius(float radius) { mRadius = radius; }
@@ -43,7 +46,9 @@ private:
 
 private:
 	Point mCenter;
+	const Point mInitialCenter;
 	Point mMapPosition;
+	const Point mInitialMapPosition;
 	const Config& mConfig;
 	Direction mDirection{ Direction::LEFT };
 	MouthState mMouthState{ MouthState::CLOSING };

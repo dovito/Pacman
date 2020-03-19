@@ -9,6 +9,12 @@ void GhostController::Draw()
 	}
 }
 
+void GhostController::Reset()
+{
+	mGhost->Reset();
+	mGameState = NOT_STARTED; 
+}
+
 void GhostController::Update(double elapsedTime)
 {
 	auto updateNow = std::chrono::duration<double>(elapsedTime);
@@ -88,52 +94,41 @@ bool GhostController::GhostCanMoveInItsOwnField()
 
 GameField* GhostController::GetNextField(Direction direction)
 {
-	auto ghostGridPosition = mGhost->GetGridPosition();
-	if (direction == LEFT)
+	const auto ghostGridPosition = mGhost->GetGridPosition();
+
+	switch (direction)
+	{
+	case LEFT:
 	{
 		if (ghostGridPosition.mColumn <= 0)
-		{
 			return mGrid->at(ghostGridPosition.mRow).at(mBoundaries.mGrid.mColumn - 1).get();;
-		}
-		else
-		{
-			return mGrid->at(ghostGridPosition.mRow).at(ghostGridPosition.mColumn - 1).get();
-		}
+
+		return mGrid->at(ghostGridPosition.mRow).at(ghostGridPosition.mColumn - 1).get();
 	}
-	else if (direction == RIGHT)
+	case RIGHT:
 	{
 		if (ghostGridPosition.mColumn >= mBoundaries.mGrid.mColumn - 1)
-		{
 			return mGrid->at(ghostGridPosition.mRow).at(0).get();;
-		}
-		else
-		{
-			return mGrid->at(ghostGridPosition.mRow).at(ghostGridPosition.mColumn + 1).get();
-		}
+
+		return mGrid->at(ghostGridPosition.mRow).at(ghostGridPosition.mColumn + 1).get();
 	}
-	else if (direction == UP)
+	case UP:
 	{
 		if (ghostGridPosition.mRow <= 0)
-		{
 			return mGrid->at(mBoundaries.mGrid.mRow - 1).at(ghostGridPosition.mColumn).get();
-		}
-		else
-		{
-			return mGrid->at(ghostGridPosition.mRow - 1).at(ghostGridPosition.mColumn).get();
-		}
+
+		return mGrid->at(ghostGridPosition.mRow - 1).at(ghostGridPosition.mColumn).get();
 	}
-	else if (direction == DOWN)
+	case DOWN:
 	{
 		if (ghostGridPosition.mRow >= mBoundaries.mGrid.mRow - 1)
-		{
 			return mGrid->at(0).at(ghostGridPosition.mColumn).get();
-		}
-		else
-		{
-			return mGrid->at(ghostGridPosition.mRow + 1).at(ghostGridPosition.mColumn).get();
-		}
+
+		return mGrid->at(ghostGridPosition.mRow + 1).at(ghostGridPosition.mColumn).get();
 	}
-	return nullptr;
+	default:
+		return nullptr;
+	}
 }
 
 bool GhostController::GhostIsInNextField(GameField* nextField)

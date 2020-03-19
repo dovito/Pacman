@@ -5,10 +5,21 @@
 
 void GameCurtainController::UpdateGameState(GameState gameState)
 {
-	if (mGameState != OVER)
+	mCurrentGameState = gameState;
+}
+
+void GameCurtainController::Reset()
+{
+	mScore = 0;
+
+	for (auto& row : *mGrid)
 	{
-		mGameState = gameState;
+		for (auto& field : row)
+		{
+			field->Reset();
+		}
 	}
+	mCurrentGameState = NOT_STARTED;
 }
 
 void GameCurtainController::Update(double elapsedTime)
@@ -17,7 +28,7 @@ void GameCurtainController::Update(double elapsedTime)
 	auto timeDelta = updateNow - mLastUpdate;
 	mUpdateInterval += std::chrono::duration_cast<std::chrono::milliseconds>(timeDelta);
 
-	if (mGameState != ACTIVE && mUpdateInterval >= mConfig.CURTAIN_UPDATE_INTERVAL)
+	if (mCurrentGameState != ACTIVE && mUpdateInterval >= mConfig.CURTAIN_UPDATE_INTERVAL)
 	{
 		mPacman->UpdateMouth(timeDelta.count());
 	}
@@ -27,22 +38,13 @@ void GameCurtainController::Update(double elapsedTime)
 
 void GameCurtainController::Draw()
 {
-	
-	if (mGameState == NOT_STARTED)
+	switch (mCurrentGameState)
 	{
-		DrawGameInitialCurtain();
-	}
-	else if (mGameState == ACTIVE)
-	{
-		DrawGameActiveCurtain();
-	}
-	else if (mGameState == PAUSED)
-	{
-		DrawGamePausedCurtain();
-	}
-	else if (mGameState == OVER)
-	{
-		DrawGameOverCurtain();
+	case NOT_STARTED: DrawGameInitialCurtain(); break;
+	case ACTIVE:      DrawGameBackgroundCurtain(); break;
+	case PAUSED:      DrawGamePausedCurtain(); break;
+	case OVER:        DrawGameOverCurtain(); break;
+	default:          break;
 	}
 }
 
@@ -55,13 +57,13 @@ void GameCurtainController::DrawGameInitialCurtain()
 	ci::TextLayout startText;
 	startText.setFont(ci::Font("Arial", 35));
 	startText.setColor(mConfig.BLUE);
-	startText.addLine("Press SPACE to start game");
+	startText.addLine("Press [SPACE] to start game or [Q] to exit");
 	texture = ci::gl::Texture2d::create(startText.render(true, false));
 	int colOffset = texture->getWidth() / 2;
 	ci::gl::draw(texture, ci::vec2(mScreenCenter.mColumn - colOffset, mScreenCenter.mRow ));
 }
 
-void GameCurtainController::DrawGameActiveCurtain()
+void GameCurtainController::DrawGameBackgroundCurtain()
 {
 	for (auto& row : *mGrid)
 	{
@@ -85,7 +87,7 @@ void GameCurtainController::DrawGamePausedCurtain()
 	text.setFont(ci::Font("Arial", 35));
 	text.setColor(mConfig.BLUE);
 	text.addCenteredLine("Game is paused");
-	text.addCenteredLine("Press SPACE to continue");
+	text.addCenteredLine("Press [SPACE] to continue");
 	texture = ci::gl::Texture2d::create(text.render(true, false));
 	int colOffset = texture->getWidth() / 2;
 	ci::gl::draw(texture, ci::vec2(mScreenCenter.mColumn - colOffset, mScreenCenter.mRow));
@@ -93,6 +95,7 @@ void GameCurtainController::DrawGamePausedCurtain()
 
 void GameCurtainController::DrawGameOverCurtain()
 {
+
 	ci::gl::color(mConfig.RED);
 	ci::gl::Texture2dRef texture;
 	ci::TextLayout text;
@@ -100,6 +103,8 @@ void GameCurtainController::DrawGameOverCurtain()
 	text.setColor(mConfig.RED);
 	text.addCenteredLine("GAME OVER");
 	text.addCenteredLine("FINAL SCORE: " + boost::lexical_cast<std::string>(mScore));
+	text.addCenteredLine("PRESS [Q] TO EXIT");
+	text.addCenteredLine("PRESS [SPACE] TO PLAY AGAIN");
 	texture = ci::gl::Texture2d::create(text.render(true, false));
 	int colOffset = texture->getWidth() / 2;
 	int rowOffset = texture->getHeight() / 2;
@@ -115,6 +120,7 @@ void GameCurtainController::DrawHelpBoard()
 	text.setFont(ci::Font("Arial", 20));
 	text.setColor(mConfig.YELLOW);
 	text.addLine("press [ESC] to pause");
+	text.addLine("press [Q] to exit");
 	texture = ci::gl::Texture2d::create(text.render(true, false));
 	auto columnOffset = texture->getWidth();
 	ci::gl::draw(texture, ci::vec2(mBoundaries.mMapPixelsMax.mColumn - columnOffset, mBoundaries.mMapPixelsMax.mRow + 5));
@@ -123,6 +129,7 @@ void GameCurtainController::DrawHelpBoard()
 void GameCurtainController::UpdateScore(int score)
 {
 	mScore += score;
+	DrawScore();
 }
 
 void GameCurtainController::DrawScore()

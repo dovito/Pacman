@@ -6,7 +6,7 @@
 class Wall : public GameField
 {
 public:
-	Wall(Point center, Point gridPosition, const Config& config)
+	Wall(const Point center, const Point gridPosition, const Config& config)
 		:
 		mCenter(center),
 		mGridPosition(gridPosition),
@@ -20,11 +20,12 @@ public:
 	void SetIsVisitable(bool visitable) override {}
 	const Point& GetCenter() const override { return mCenter; }
 	const Point& GetGridPosition() const override { return mGridPosition; }
-	void SetCenter(const Point& center) override {};
-	void SetGridPosition(const Point& position) override {};
+	void SetCenter(const Point& center) override {}
+	void SetGridPosition(const Point& position) override {}
 	void UnsetPoints() override {}
-	const int GetPoints() const override { return 0;  }
+	const int GetPoints() const { return 0;  }
 	void Draw() override;
+	void Reset() override {}
 
 private:
 	Point mCenter;

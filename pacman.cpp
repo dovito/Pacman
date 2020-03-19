@@ -58,6 +58,12 @@ void Pacman::Draw()
 	}
 }
 
+void Pacman::Reset()
+{
+	mCenter = mInitialCenter;
+	mMapPosition = mInitialMapPosition;
+}
+
 std::vector<ci::vec2> Pacman::GetSkeleton()
 {
 	std::vector<ci::vec2> skeleton;

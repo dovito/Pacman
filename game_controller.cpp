@@ -41,6 +41,8 @@ void GameController::Update(double elapsedTime)
 
 void GameController::Draw()
 {
+	mCurtainController->Draw();
+
 	if (mGameState == ACTIVE)
 	{
 		for (auto& ghostController : mGhostControllers)
@@ -49,7 +51,12 @@ void GameController::Draw()
 		}
 		mPacmanController->Draw();
 	}
-	mCurtainController->Draw();
+}
+
+void GameController::Reset()
+{
+	mTimeSinceGameActive = DurationSeconds(0.0);
+	mGhostsReleased = false;
 }
 
 void GameController::KeyDown(Direction direction)
@@ -64,7 +71,10 @@ GameWorld GameController::CreateGameWorld()
 
 	int fieldRow = mConfig.MAP_START_ROW;
 	std::ifstream inFile(mConfig.MAP_FILE_NAME);
-	
+
+	if (!inFile.is_open())
+		throw std::runtime_error("could not open " + mConfig.MAP_FILE_NAME);
+
 	for (std::string line; getline(inFile, line);)
 	{
 		int fieldColumn = mConfig.MAP_START_COLUMN;
@@ -74,11 +84,10 @@ GameWorld GameController::CreateGameWorld()
 
 		for (auto token : tokens)
 		{
-			Point center(fieldRow, fieldColumn);
-			Point gridPosition{ static_cast<int>(grid.size()), static_cast<int>(gameFields.size()) };
+			const Point center(fieldRow, fieldColumn);
+			const Point gridPosition{ static_cast<int>(grid.size()), static_cast<int>(gameFields.size()) };
 
-			auto it = stringToField.find(token);
-			if (it != stringToField.end())
+			if (auto it = stringToField.find(token); it != stringToField.end())
 			{
 				switch (it->second)
 				{
@@ -152,19 +161,29 @@ void GameController::SetupControllers(GameWorld& gameWorld)
 	}
 }
 
-void GameController::UpdateGameState(GameState gameState)
+void GameController::UpdateGameState(GameState newGameState)
 {
-	if (mGameState != OVER)
+	if (mGameState == OVER && newGameState == ACTIVE)
 	{
-		for (auto& ghostController : mGhostControllers)
-		{
-			ghostController->UpdateGameState(gameState);
-		}
-
-		mPacmanController->UpdateGameState(gameState);
-		mCurtainController->UpdateGameState(gameState);
-		mGameState = gameState;
+		mPacmanController->Reset();
+		std::for_each(mGhostControllers.begin(), mGhostControllers.end(), [&](const GhostControllerPtr& ghostController)
+			{
+				ghostController->Reset();
+			});
+		mCurtainController->Reset();
+		mGameState = NOT_STARTED;
+		Reset();
+		return;
 	}
+
+	for (auto& ghostController : mGhostControllers)
+	{
+		ghostController->UpdateGameState(newGameState);
+	}
+
+	mPacmanController->UpdateGameState(newGameState);
+	mCurtainController->UpdateGameState(newGameState);
+	mGameState = newGameState;
 }
 
 void GameController::ReleaseGhosts()

@@ -17,11 +17,11 @@ inline const char* GameStateToStr(GameState state) // for debugging
 {
 	switch (state)
 	{
-	case NOT_STARTED:   return "NOT_STARTED";
-	case ACTIVE:   return "ACTIVE";
-	case PAUSED:  return "PAUSED";
-	case OVER:     return "OVER";
-	default:     return "UNKNOWN";
+	case NOT_STARTED: return "NOT_STARTED";
+	case ACTIVE:      return "ACTIVE";
+	case PAUSED:      return "PAUSED";
+	case OVER:        return "OVER";
+	default:          return "UNKNOWN";
 	}
 }
 
@@ -82,6 +82,7 @@ public:
 	virtual void Setup() = 0;
 	virtual void Update(double elapsedTime) = 0;
 	virtual void Draw() = 0;
+	virtual void Reset() = 0;
 	virtual void KeyDown(Direction direction) = 0;
 	virtual void UpdateGameState(GameState gameState) = 0;
 };
@@ -101,6 +102,7 @@ public:
 	virtual void SetGridPosition(const Point& position) = 0;
 
 	virtual void Draw() = 0;
+	virtual void Reset() = 0;
 };
 
 class IGameObject
@@ -116,6 +118,7 @@ public:
 	virtual void SetGridPosition(const Point& position) = 0;
 	virtual void MakeStep() = 0;
 	virtual void Draw() = 0;
+	virtual void Reset() = 0;
 };
 
 typedef std::unique_ptr<GameField> FieldPtr;
